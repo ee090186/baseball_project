@@ -27,20 +27,21 @@ from .forms import ProfileForm, UserCreateForm
 
 
 def register_user(request):
+    # or NoneでGet時はNoneとなり、引数なしのフォームを作る。
     user_form = UserCreateForm(request.POST or None)
     profile_form = ProfileForm(request.POST or None)
     if request.method == "POST" and user_form.is_valid() and profile_form.is_valid():
 
-        # Userモデルの処理。ログインできるようis_activeをTrueにし保存
+        # Userモデルの処理。ログインできるようis_activeをTrueにし保存。
         user = user_form.save(commit=False)
         user.is_active = True
         user.save()
 
-        # Profileモデルの処理。↑のUserモデルと紐づけましょう。
+        # Profileモデルの処理。Userモデルと紐づけ。
         profile = profile_form.save(commit=False)
         profile.user = user
         profile.save()
-        return redirect("testapp:index")
+        # return redirect('')
 
     context = {
         "user_form": user_form,

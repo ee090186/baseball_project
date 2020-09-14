@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models import fields
+from django.forms import widgets
 from .models import Profile
 
 
@@ -13,10 +14,14 @@ class UserCreateForm(UserCreationForm):
         widget=forms.PasswordInput(attrs={'class':'form-control'}))
 
 
-
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = (
-            "name", "gender", "phone"
+            "name", "phone", "gender"
         )
+        widgets = {
+            'name': forms.TextInput(attrs={'class':'form-control'}),
+            'phone': forms.TextInput(attrs={'class':'form-control'}),
+            'gender': forms.TextInput(attrs={'class':'form-control'}),
+        }
