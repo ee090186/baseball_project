@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<form action="" method="POST">{% csrf_token %}
+    
+    <table class="table">
+    {{ user_form.as_table }}
+    <hr>
+    {{ profile_form.as_table }}
+    <tr>
+        <th>
+            <td>
+                <input type="submit" value="送信" class="btn btn-primary mt-2"></table>
+            </td>
+        </th>
+    </tr>
+</form>
+
+{% endblock %}
