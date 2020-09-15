@@ -18,10 +18,17 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = (
-            "name", "phone", "gender"
+            "name", "gender", "birthday", "email", "height", "weight", "uniform_number", "position", "batting_handedness", "throwing_handedness"
         )
         widgets = {
             'name': forms.TextInput(attrs={'class':'form-control'}),
-            'phone': forms.TextInput(attrs={'class':'form-control'}),
             'gender': forms.TextInput(attrs={'class':'form-control'}),
+            'birthday': forms.DateInput(attrs={'class':'form-control'}),
+            'email': forms.EmailInput(attrs={'class':'form-control'}),
+            'height': forms.NumberInput(attrs={'class':'form-control'}),
+            'weight': forms.NumberInput(attrs={'class':'form-control'}),
+            'uniform_number': forms.NumberInput(attrs={'class':'form-control'}),
+            'position': forms.TextInput(attrs={'class':'form-control'}),
+            'batting_handedness': forms.TextInput(attrs={'class':'form-control'}),
+            'throwing_handedness': forms.TextInput(attrs={'class':'form-control'}),
         }
