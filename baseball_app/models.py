@@ -44,8 +44,8 @@ class Profile(models.Model):
     weight = models.FloatField('体重', blank=True)
     uniform_number = models.IntegerField('背番号', blank=True)
     position = models.CharField('ポジション', max_length=7, choices=POSITION_CHOICES)
-    batting_handedness = models.CharField('打ち方', max_length=3, choices=BATTING_HANDEDNESS_CHOICES)
-    throwing_handedness = models.CharField('投げ方', max_length=3, choices=THROWING_HANDEDNESS_CHOICES)
+    batting_handedness = models.CharField('打ち方', max_length=20, choices=BATTING_HANDEDNESS_CHOICES)
+    throwing_handedness = models.CharField('投げ方', max_length=21, choices=THROWING_HANDEDNESS_CHOICES)
     
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
