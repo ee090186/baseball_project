@@ -6,8 +6,8 @@ from django.db import models
 
 
 GENDER_CHOICES = (
-    ('man', '女性'),
-    ('woman', '男性'),
+    ('man', '男性'),
+    ('woman', '女性'),
     ('other', 'その他'),
 )
 
