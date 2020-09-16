@@ -11,20 +11,6 @@ from .forms import ProfileForm, UserCreateForm
 
 
 
-def loginview(request):
-    if request.method == 'POST':
-        username_data = request.POST['username_data']
-        password_data = request.POST['password_data']
-        user = authenticate(request, username=username_data, password=password_data)
-        if user is not None:
-            login(request, user)
-            return redirect('list')
-        else:
-            return redirect('login')
-
-    return render(request, 'login.html')
-
-
 def register_user(request):
     # or NoneでGet時はNoneとなり、引数なしのフォームを作る。
     user_form = UserCreateForm(request.POST or None)
@@ -40,10 +26,38 @@ def register_user(request):
         profile = profile_form.save(commit=False)
         profile.user = user
         profile.save()
-        # return redirect('')
+        return redirect('home.html')
 
     context = {
         "user_form": user_form,
         "profile_form": profile_form,
     }
     return render(request, 'register_user.html', context)
+
+
+def loginview(request):
+    if request.method == 'POST':
+        username_data = request.POST['username_data']
+        password_data = request.POST['password_data']
+        user = authenticate(request, username=username_data, password=password_data)
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            return redirect('login')
+
+    return render(request, 'login.html')
+
+
+def logoutview(request):
+    logout(request)
+    return redirect('login')
+
+
+def homeview(request):
+    params = {
+        'login_user': request.user,
+    }
+
+    return render(request, 'home.html', params)
+    
