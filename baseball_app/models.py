@@ -37,7 +37,7 @@ THROWING_HANDEDNESS_CHOICES = (
 
 class Profile(models.Model):
     name = models.CharField('氏名', max_length=100)
-    gender = models.IntegerField('性別', choices=GENDER_CHOICES)
+    gender = models.CharField('性別', max_length=5, choices=GENDER_CHOICES)
     birthday = models.DateField('生年月日', blank=True)
     email = models.EmailField('メールアドレス', blank=True)
     height = models.FloatField('身長', blank=True)
