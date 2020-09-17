@@ -11,7 +11,7 @@ from .forms import ProfileForm, UserCreateForm
 
 
 
-def register_user(request):
+def registerview(request):
     # or NoneでGet時はNoneとなり、引数なしのフォームを作る。
     user_form = UserCreateForm(request.POST or None)
     profile_form = ProfileForm(request.POST or None)
@@ -26,13 +26,13 @@ def register_user(request):
         profile = profile_form.save(commit=False)
         profile.user = user
         profile.save()
-        return redirect('home.html')
+        return redirect('home')
 
     context = {
         "user_form": user_form,
         "profile_form": profile_form,
     }
-    return render(request, 'register_user.html', context)
+    return render(request, 'login_register/register.html', context)
 
 
 def loginview(request):
@@ -46,7 +46,7 @@ def loginview(request):
         else:
             return redirect('login')
 
-    return render(request, 'login.html')
+    return render(request, 'login_register/login.html')
 
 
 def logoutview(request):
