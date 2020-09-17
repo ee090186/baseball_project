@@ -53,7 +53,7 @@ def logoutview(request):
     logout(request)
     return redirect('login')
 
-
+@login_required()
 def homeview(request):
     params = {
         'login_user': request.user,
