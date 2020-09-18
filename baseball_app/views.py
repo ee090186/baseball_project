@@ -71,6 +71,7 @@ def updateview(request, pk):
     if request.method == "POST" and user_form.is_valid() and profile_form.is_valid():
         user_form.save()
         profile_form.save()
+        login(request, user) # if文部分でセッションが切れている（原因不明）ので、login_requiredにかからないよう追記
         return redirect("home")
 
     context = {
