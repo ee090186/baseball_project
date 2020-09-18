@@ -65,7 +65,7 @@ def homeview(request):
 @login_required()
 def updateview(request, pk):
     user = get_object_or_404(User, pk=pk)
-    profile = Profile.objects.get(id=pk)
+    profile = Profile.objects.get(user_id=pk)
     user_form = UserCreateForm(request.POST or None, instance=user)
     profile_form = ProfileForm(request.POST or None, instance=profile)
     if request.method == "POST" and user_form.is_valid() and profile_form.is_valid():
@@ -76,5 +76,6 @@ def updateview(request, pk):
     context = {
         "user_form": user_form,
         "profile_form": profile_form,
+        'login_user': request.user
     }
     return render(request, 'update.html', context)
