@@ -80,3 +80,14 @@ def updateview(request, pk):
         'login_user': request.user
     }
     return render(request, 'update.html', context)
+
+
+def listview(request):
+    
+    if request.method == 'POST':
+        team_name = request.POST['team_name']
+        teammate_profile = Profile.objects.filter(team=team_name)
+        teammate_user = User.objects.filter(team__in=teammate_profile)
+        return render(request, 'list.html', {'teammate_profile': teammate_profile})
+
+    return render(request, 'list.html')
