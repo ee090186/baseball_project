@@ -88,14 +88,14 @@ def listview(request):
        3.そのプロフィールインスタンスからチーム名を取り出す。
        4.そのチーム名を持つプロフィールインスタンスのクエリセットをteammate_profileへ代入"""
 
-    my_user = request.user
-    my_team = Profile.objects.get(user=my_user).team
+    login_user = request.user
+    my_team = Profile.objects.get(user=login_user).team
     teammate_profile = Profile.objects.filter(team=my_team)
-    teammate_user = User.objects.filter(team__in=teammate_profile)
+    teammate_user = User.objects.filter(profile__team__in=teammate_profile)
     context = {
         'teammate_profile': teammate_profile,
         'teammate_user': teammate_user,
-        'my_user': my_user,
+        'login_user': login_user,
     }
     return render(request, 'list.html', context)
 

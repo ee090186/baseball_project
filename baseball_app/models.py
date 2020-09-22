@@ -46,7 +46,7 @@ class Profile(models.Model):
     position = models.CharField('ポジション', max_length=7, choices=POSITION_CHOICES)
     batting_handedness = models.CharField('打ち方', max_length=20, choices=BATTING_HANDEDNESS_CHOICES)
     throwing_handedness = models.CharField('投げ方', max_length=21, choices=THROWING_HANDEDNESS_CHOICES)
-    team = models.CharField('チーム名', max_length=100, blank=True, null=True, unique=True)
+    team = models.CharField('チーム名', max_length=100, blank=True, null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def __str__(self):
