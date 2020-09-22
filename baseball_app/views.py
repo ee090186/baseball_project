@@ -81,13 +81,22 @@ def updateview(request, pk):
     }
     return render(request, 'update.html', context)
 
-
+@login_required()
 def listview(request):
-    
-    if request.method == 'POST':
-        team_name = request.POST['team_name']
-        teammate_profile = Profile.objects.filter(team=team_name)
-        teammate_user = User.objects.filter(team__in=teammate_profile)
-        return render(request, 'list.html', {'teammate_profile': teammate_profile})
+    """1.ログイン中のユーザーを取り出す。
+       2.そのユーザーのプロフィールインスタンスを取り出す。
+       3.そのプロフィールインスタンスからチーム名を取り出す。
+       4.そのチーム名を持つプロフィールインスタンスのクエリセットをteammate_profileへ代入"""
 
-    return render(request, 'list.html')
+    my_user = request.user
+    my_team = Profile.objects.get(user=my_user).team
+    teammate_profile = Profile.objects.filter(team=my_team)
+    teammate_user = User.objects.filter(team__in=teammate_profile)
+    context = {
+        'teammate_profile': teammate_profile,
+        'teammate_user': teammate_user,
+        'my_user': my_user,
+    }
+    return render(request, 'list.html', context)
+
+

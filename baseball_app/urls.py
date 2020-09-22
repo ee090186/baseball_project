@@ -14,5 +14,5 @@ urlpatterns = [
         path('logout/', logoutview, name='logout'),
         path('update/<int:pk>', updateview, name='update'),
         path('list/', listview, name='list'),
-        
+
 ]
