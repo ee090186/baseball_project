@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<div class="container">
+    {% for member in teammate_profile %}
+    <div class="card">
+        <h5 class="card-header">{{ member.name }}</h5>
+        <div class="card-body">
+            <h5 class="card-title">ポジション: {{ member.get_position_display }}</h5>
+            <h5 class="card-title">打ち方: {{ member.get_batting_handedness_display }}</h5>
+            <h5 class="card-title">投げ方: {{ member.get_throwing_handedness_display }}</h5>
+            <a href="{% url 'update' member.user.pk %}" class="btn btn-primary">詳しく見る(編集可)</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+{% endblock content %}

@@ -81,6 +81,7 @@ def updateview(request, pk):
     }
     return render(request, 'update.html', context)
 
+
 @login_required()
 def listview(request):
     """1.ログイン中のユーザーを取り出す。
@@ -100,3 +101,12 @@ def listview(request):
     return render(request, 'list.html', context)
 
 
+@login_required()
+def deleteview(request):
+    user = request.user
+    
+    if request.method == 'POST':
+        user.delete()
+        return redirect('login')
+    
+    return render(request, 'delete.html')
