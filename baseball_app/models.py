@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import CASCADE
 from django.db.models.fields import BooleanField, IntegerField
 
 
@@ -81,7 +82,7 @@ class Situation(models.Model):
         ('2', '2ストライク'),
     )
 
-    INNIG_CHOICES = (
+    INNING_CHOICES = (
         ('1', '1回'),
         ('2', '2回'),
         ('3', '3回'),
@@ -99,7 +100,7 @@ class Situation(models.Model):
     outs = models.CharField('アウトカウント', max_length=20, choices=OUTS_CHOICES)
     ball_count = models.CharField('ボール', max_length=20, choices=BAll_COUNT_CHOICES)
     strike_count = models.CharField('ストライク', max_length=20, choices=STRIKE_COUNT_CHOICES)
-    inning = models.CharField('回', max_length=20, choices=INNIG_CHOICES)
+    inning = models.CharField('回', max_length=20, choices=INNING_CHOICES)
     def __str__(self):
         return self.inning + '(' + self.outs + ')'
 
@@ -151,6 +152,7 @@ class Pitting(models.Model):
     speed = models.CharField('球速', max_length=20, choices=SPEED_CHOICES)
     type_of_pitch = models.CharField('球種', max_length=20, choices=TYPE_OF_PITCH_CHOICES)
     pichout_or_waste = models.BooleanField('ピッチアウト,捨て球', default=False)
+    bark = models.BooleanField('ボーク', default=False)
     number_of_pitches = models.IntegerField('球数')
     def __str__(self):
         return str(self.user) + '(' + self.number_of_pitches + ')'
@@ -159,9 +161,10 @@ class Pitting(models.Model):
 
 class Batting(models.Model):
     BATTING_CHOICES = (
-        ('swing', 'スイング'),
-        ('looking', '見送り'),
-        ('bunt', '送りバント'),
+        ('swing_and_missed', '空振り'),
+        ('swing_and_contact', 'スイング(空振り・ファール以外)'),
+        ('foul', 'ファール'),
+        ('taken', '見送り'),
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     pitting = models.OneToOneField(Pitting, on_delete=models.CASCADE)
@@ -171,5 +174,24 @@ class Batting(models.Model):
 
 
 
-class Results(models.Model):
+class ContactedResults(models.Model):
+    RESULTS_CHOICES = (
+
+
+
+
+    )
     
+
+    batting = models.OneToOneField(Batting, on_delete=CASCADE)
+
+
+
+class UncontactedResults(models.Model):
+    RESULTS_CHOICES = (
+        ('strikeout', '三振'),
+        ('base_on_ball', '四球'),
+        ('wild_pit', 'ワイルドピッチ'),
+        ('passed_ball', 'パスボール'),
+        ('hit_by_pitch', '死球'),
+    )
