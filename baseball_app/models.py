@@ -175,23 +175,60 @@ class Batting(models.Model):
 
 
 class ContactedResults(models.Model):
-    RESULTS_CHOICES = (
-
-
-
-
+    CONTACTED_RESULTS_CHOICES = (
+        ('groundball', 'ゴロ'),
+        ('flyball', 'フライ'),
+        ('linedrive', 'ライナー'),
+        ('single', '単打'),
+        ('double', '2塁打'),
+        ('triple', '3塁打'),
+        ('inside_the_park_homerun', 'ランニングホームラン'),
+        ('homerun', 'ホームラン'),
     )
-    
-
+    CATCH_POSITION_CHOICES = (
+        ('picher', 'ピッチャー'),
+        ('catcher', 'キャッチャー'),
+        ('first', 'ファースト'),
+        ('second', 'セカンド'),
+        ('third', 'サード'),
+        ('short', 'ショート'),
+        ('left', 'レフト'),
+        ('center', 'センター'),
+        ('right', 'ライト'),
+    )
+    NUMBER_OF_OUTS_CHOICES = (
+        ('1', '1'),
+        ('2', '2'),
+        ('3', '3'),
+    )
     batting = models.OneToOneField(Batting, on_delete=CASCADE)
+    contacted_result = models.CharField('結果', max_length=20,choices=CONTACTED_RESULTS_CHOICES)
+    catch_position_choices = models.CharField('打球方向', max_length=20, choices=CATCH_POSITION_CHOICES)
+    score = models.IntegerField('得点', blank=True, null=True)
+    added_number_of_outs = models.CharField('増えたアウトカウント', max_length=20, choices=NUMBER_OF_OUTS_CHOICES)
+    def __str__(self):
+
 
 
 
 class UncontactedResults(models.Model):
-    RESULTS_CHOICES = (
+    UNCONTACTED_RESULTS_CHOICES = (
         ('strikeout', '三振'),
         ('base_on_ball', '四球'),
         ('wild_pit', 'ワイルドピッチ'),
         ('passed_ball', 'パスボール'),
         ('hit_by_pitch', '死球'),
     )
+    NUMBER_OF_OUTS_CHOICES = (
+        ('1', '1'),
+        ('2', '2'),
+        ('3', '3'),
+    )
+    batting = models.OneToOneField(Batting, on_delete=models.CASCADE)
+    uncontacted_results = models.CharField('結果', max_length=20, choices=UNCONTACTED_RESULTS_CHOICES)
+    score = models.IntegerField('得点', blank=True, null=True)
+    added_number_of_outs = models.CharField('増えたアウトカウント', max_length=20, choices=NUMBER_OF_OUTS_CHOICES)
+    def __str__(self):
+        
+
+
