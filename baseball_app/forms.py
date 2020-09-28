@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models import fields
 from django.forms import widgets
-from .models import Profile
+from .models import Profile, Situation, Pitting, Batting, ContactedResults, UncontactedResults
 
 
 class UserCreateForm(UserCreationForm):
@@ -25,3 +25,14 @@ class ProfileForm(forms.ModelForm):
             "name", "gender", "birthday", "email", "height", "weight", "uniform_number", "position", "batting_handedness", "throwing_handedness", "team"
         )
         
+
+class SituationForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs["class"] = "form-control"
+    class Meta:
+        model = Situation
+        fields = (
+            'base', 'outs', 'ball_count', 'strike_count', 'inning'
+        )
