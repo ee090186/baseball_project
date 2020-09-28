@@ -162,13 +162,14 @@ class Pitting(models.Model):
 class Batting(models.Model):
     BATTING_CHOICES = (
         ('swing_and_missed', '空振り'),
-        ('swing_and_contact', 'スイング(空振り・ファール以外)'),
+        ('swing_and_contact', 'ゴロ・フライ・ライナー・単打・長打'),
         ('foul', 'ファール'),
         ('taken', '見送り'),
+        ('other', 'その他'),
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     pitting = models.OneToOneField(Pitting, on_delete=models.CASCADE)
-    batting = models.CharField('打者の行動', max_length=7, choices=BATTING_CHOICES)
+    batting = models.CharField('打者の行動', max_length=20, choices=BATTING_CHOICES)
     def __str__(self):
         return str(self.user) + self.batting
 
@@ -196,18 +197,18 @@ class ContactedResults(models.Model):
         ('center', 'センター'),
         ('right', 'ライト'),
     )
-    NUMBER_OF_OUTS_CHOICES = (
+    ADDED_NUMBER_OF_OUTS_CHOICES = (
         ('1', '1'),
         ('2', '2'),
         ('3', '3'),
     )
     batting = models.OneToOneField(Batting, on_delete=CASCADE)
-    contacted_result = models.CharField('結果', max_length=20,choices=CONTACTED_RESULTS_CHOICES)
+    contacted_results = models.CharField('結果', max_length=20,choices=CONTACTED_RESULTS_CHOICES)
     catch_position_choices = models.CharField('打球方向', max_length=20, choices=CATCH_POSITION_CHOICES)
     score = models.IntegerField('得点', blank=True, null=True)
-    added_number_of_outs = models.CharField('増えたアウトカウント', max_length=20, choices=NUMBER_OF_OUTS_CHOICES)
+    added_number_of_outs = models.CharField('増えたアウトカウント', max_length=20, choices=ADDED_NUMBER_OF_OUTS_CHOICES)
     def __str__(self):
-
+        return str(self.contacted_results)
 
 
 
@@ -219,7 +220,7 @@ class UncontactedResults(models.Model):
         ('passed_ball', 'パスボール'),
         ('hit_by_pitch', '死球'),
     )
-    NUMBER_OF_OUTS_CHOICES = (
+    ADDED_NUMBER_OF_OUTS_CHOICES = (
         ('1', '1'),
         ('2', '2'),
         ('3', '3'),
@@ -227,8 +228,7 @@ class UncontactedResults(models.Model):
     batting = models.OneToOneField(Batting, on_delete=models.CASCADE)
     uncontacted_results = models.CharField('結果', max_length=20, choices=UNCONTACTED_RESULTS_CHOICES)
     score = models.IntegerField('得点', blank=True, null=True)
-    added_number_of_outs = models.CharField('増えたアウトカウント', max_length=20, choices=NUMBER_OF_OUTS_CHOICES)
+    added_number_of_outs = models.CharField('増えたアウトカウント', max_length=20, choices=ADDED_NUMBER_OF_OUTS_CHOICES)
     def __str__(self):
-        
-
+        return str(self.uncontacted_results)
 
