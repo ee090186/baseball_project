@@ -203,8 +203,8 @@ class ContactedResults(models.Model):
         ('3', '3'),
     )
     batting = models.OneToOneField(Batting, on_delete=CASCADE)
-    contacted_results = models.CharField('結果', max_length=20,choices=CONTACTED_RESULTS_CHOICES)
-    catch_position_choices = models.CharField('打球方向', max_length=20, choices=CATCH_POSITION_CHOICES)
+    contacted_results = models.CharField('結果', max_length=30,choices=CONTACTED_RESULTS_CHOICES)
+    catch_position_choices = models.CharField('打球方向', max_length=30, choices=CATCH_POSITION_CHOICES)
     score = models.IntegerField('得点', blank=True, null=True)
     added_number_of_outs = models.CharField('増えたアウトカウント', max_length=20, choices=ADDED_NUMBER_OF_OUTS_CHOICES)
     def __str__(self):
