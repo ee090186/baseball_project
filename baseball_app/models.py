@@ -10,7 +10,6 @@ class Profile(models.Model):
         ('woman', '女性'),
         ('other', 'その他'),
     )
-
     POSITION_CHOICES = (
         ('picher', 'ピッチャー'),
         ('catcher', 'キャッチャー'),
@@ -22,13 +21,11 @@ class Profile(models.Model):
         ('center', 'センター'),
         ('right', 'ライト'),
     )
-
     BATTING_HANDEDNESS_CHOICES = (
         ('right_handed_batting', '右打ち'),
         ('left_handed_batting', '左打ち'),
         ('switch_hitter', '両打ち'),
     )
-
     THROWING_HANDEDNESS_CHOICES = (
         ('right_handed_throwing', '右投げ'),
         ('left_handed_throwing', '左投げ'),
@@ -62,26 +59,22 @@ class Situation(models.Model):
         ('2-3', '2塁3塁'),
         ('1-2-3', '満塁'),
     )
-
     OUTS_CHOICES = (
         ('0', '0アウト'),
         ('1', '1アウト'),
         ('2', '2アウト'),
     )
-
     BAll_COUNT_CHOICES = (
         ('0', '0ボール'),
         ('1', '1ボール'),
         ('2', '2ボール'),
         ('3', '3ボール'),
     )
-
     STRIKE_COUNT_CHOICES = (
         ('0', '0ストライク'),
         ('1', '1ストライク'),
         ('2', '2ストライク'),
     )
-
     INNING_CHOICES = (
         ('1', '1回'),
         ('2', '2回'),
@@ -114,7 +107,6 @@ class Pitting(models.Model):
         ('near_outside', '外角寄り'),
         ('outside', '外角'),
     )
-
     HEIGHT_COURSE_CHOICES = (
         ('low', '低め'),
         ('near_low', '低め寄り'),
@@ -122,7 +114,6 @@ class Pitting(models.Model):
         ('near_high', '高め寄り'),
         ('high', '高め'),
     )
-
     SPEED_CHOICES = (
         ('100', '100km以下'),
         ('110', '110km台'),
@@ -132,7 +123,6 @@ class Pitting(models.Model):
         ('150', '150km台'),
         ('160', '160km以上'),
     )
-
     TYPE_OF_PITCH_CHOICES = (
         ('4sfb', 'ストレート'),
         ('cb', 'カーブ'),

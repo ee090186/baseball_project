@@ -110,3 +110,22 @@ def deleteview(request):
         return redirect('login')
     
     return render(request, 'delete.html')
+
+
+
+@login_required()
+def dataview(request):
+    if request.method == 'POST':
+        pitcher = User.objects.get(username=request.POST['pitchername'])
+        batter = User.objects.get(username=request.POST['battername'])
+        pitchername = Profile.objects.get(user=pitcher).name
+        battername = Profile.objects.get(user=batter).name
+        context = {
+            'pitchername': pitchername,
+            'battername': battername,
+        }
+        return render(request, 'data.html', context)
+        
+    return render(request, 'data.html')
+
+
