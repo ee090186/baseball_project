@@ -58,7 +58,7 @@ class BattingForm(forms.ModelForm):
     class Meta:
         model = Batting
         fields = (
-            'batting',
+            'batting', 'discrimination'
         )
 
 

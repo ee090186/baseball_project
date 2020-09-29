@@ -157,9 +157,15 @@ class Batting(models.Model):
         ('taken', '見送り'),
         ('other', 'その他'),
     )
+    DISCRIMINATION_CHOICES = (
+        ('undecided', '打席結果未定'),
+        ('decided_with_contacted', '打席結果確定(フライアウト、ヒットなどバットとボールのコンタクト有り)'),
+        ('decided_with_uncontacted', '打席結果確定(三振、四球などバットとボールのコンタクト無し)'),
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     pitting = models.OneToOneField(Pitting, on_delete=models.CASCADE)
     batting = models.CharField('打者の行動', max_length=20, choices=BATTING_CHOICES)
+    discrimination = models.CharField('打席結果', max_length=30, choices=DISCRIMINATION_CHOICES)
     def __str__(self):
         return str(self.user) + self.batting
 
@@ -221,4 +227,5 @@ class UncontactedResults(models.Model):
     added_number_of_outs = models.CharField('増えたアウトカウント', max_length=20, choices=ADDED_NUMBER_OF_OUTS_CHOICES)
     def __str__(self):
         return str(self.uncontacted_results)
+
 

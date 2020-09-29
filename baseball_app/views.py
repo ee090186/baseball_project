@@ -116,25 +116,38 @@ def deleteview(request):
 @login_required()
 def dataview(request):
     if request.method == 'POST':
-        pitcher = User.objects.get(username=request.POST['pitchername'])
+        # POST送信時の共通処理・準備
+        pitcher = User.objects.get(username=request.POST['pitchername']) # 以下ピッチャーとバッターのプロフィール側の名前取り出し部分長いためいずれ改善
         batter = User.objects.get(username=request.POST['battername'])
         pitchername = Profile.objects.get(user=pitcher).name
         battername = Profile.objects.get(user=batter).name
-        situation_form = SituationForm(request.POST or None)
-        pitting_form = PittingForm(request.POST or None)
-        batting_form = BattingForm(request.POST or None)
-        contacted_results_form = ContactedResultsForm(request.POST or None)
-        uncontacted_results_form = UncontactedResultsForm(request.POST or None)
         context = {
             'pitchername': pitchername,
             'battername': battername,
+            'pitcher': pitcher,
+            'batter': batter,
             'login_user': request.user,
-            'situation_form': situation_form,
-            'pitting_form': pitting_form,
-            'batting_form': batting_form,
-            'contacted_results_form': contacted_results_form,
-            'uncontacted_results_form': uncontacted_results_form,
         }
+
+        # 最初のピッチャーとバッター名入力後および、打席結果未定のPOST送信時のフォーム準備
+        if 'discrimination' not in request.POST or request.POST['discrimination'] == 'undecided':
+            situation_form = SituationForm(request.POST or None)
+            pitting_form = PittingForm(request.POST or None)
+            batting_form = BattingForm(request.POST or None)
+            context.update(
+                {'situation_form': situation_form,
+                'pitting_form': pitting_form,
+                'batting_form': batting_form,}
+            )
+        # 以下二つの条件分岐は、打席結果確定時のフォーム準備
+        elif request.POST['discrimination'] == 'decided_with_contacted':
+            contacted_results_form = ContactedResultsForm(request.POST or None)
+            context.update({'contacted_results_form': contacted_results_form,})
+
+        elif request.POST['discrimination'] == 'decided_with_uncontacted':
+            uncontacted_results_form = UncontactedResultsForm(request.POST or None)
+            context.update({'uncontacted_results_form': uncontacted_results_form,})
+
         return render(request, 'data.html', context)
         
     return render(request, 'data.html')
