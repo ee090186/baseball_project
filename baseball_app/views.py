@@ -7,7 +7,7 @@ from django.template.context_processors import request
 from django.views.generic import CreateView, UpdateView
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import ProfileForm, UserCreateForm, SituationForm
+from .forms import ProfileForm, UserCreateForm, SituationForm, PittingForm, BattingForm, ContactedResultsForm, UncontactedResultsForm
 from .models import Profile
 
 
@@ -121,12 +121,19 @@ def dataview(request):
         pitchername = Profile.objects.get(user=pitcher).name
         battername = Profile.objects.get(user=batter).name
         situation_form = SituationForm(request.POST or None)
+        pitting_form = PittingForm(request.POST or None)
+        batting_form = BattingForm(request.POST or None)
+        contacted_results_form = ContactedResultsForm(request.POST or None)
+        uncontacted_results_form = UncontactedResultsForm(request.POST or None)
         context = {
             'pitchername': pitchername,
             'battername': battername,
             'login_user': request.user,
             'situation_form': situation_form,
-            
+            'pitting_form': pitting_form,
+            'batting_form': batting_form,
+            'contacted_results_form': contacted_results_form,
+            'uncontacted_results_form': uncontacted_results_form,
         }
         return render(request, 'data.html', context)
         
