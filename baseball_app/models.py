@@ -145,7 +145,7 @@ class Pitting(models.Model):
     bark = models.BooleanField('ボーク', default=False)
     number_of_pitches = models.IntegerField('球数')
     def __str__(self):
-        return str(self.user) + '(' + self.number_of_pitches + ')'
+        return self.user.username + '(' + str(self.number_of_pitches) + ')'
 
 
 
@@ -167,7 +167,7 @@ class Batting(models.Model):
     batting = models.CharField('打者の行動', max_length=20, choices=BATTING_CHOICES)
     discrimination = models.CharField('打席結果', max_length=30, choices=DISCRIMINATION_CHOICES)
     def __str__(self):
-        return str(self.user) + self.batting
+        return self.user.username + self.batting
 
 
 

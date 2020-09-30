@@ -8,7 +8,7 @@ from django.views.generic import CreateView, UpdateView
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ProfileForm, UserCreateForm, SituationForm, PittingForm, BattingForm, ContactedResultsForm, UncontactedResultsForm
-from .models import Profile
+from .models import Profile, Situation, Pitting, Batting, ContactedResults, UncontactedResults
 
 
 def registerview(request):
@@ -129,27 +129,83 @@ def dataview(request):
             'login_user': request.user,
         }
 
-        # 最初のピッチャーとバッター名入力後および、打席結果未定のPOST送信時のフォーム準備
-        if 'discrimination' not in request.POST or request.POST['discrimination'] == 'undecided':
-            situation_form = SituationForm(request.POST or None)
-            pitting_form = PittingForm(request.POST or None)
-            batting_form = BattingForm(request.POST or None)
-            context.update(
-                {'situation_form': situation_form,
-                'pitting_form': pitting_form,
-                'batting_form': batting_form,}
-            )
-        # 以下二つの条件分岐は、打席結果確定時のフォーム準備
-        elif request.POST['discrimination'] == 'decided_with_contacted':
-            contacted_results_form = ContactedResultsForm(request.POST or None)
-            context.update({'contacted_results_form': contacted_results_form,})
+        if 'discrimination' not in request.POST:
+            # 打席結果のPOST送信時の処理
+            if 'contacted_results' in request.POST:
+                contacted_results_form = ContactedResultsForm(request.POST)
+                batting = Batting.objects.get(id=request.POST['batting_id'])
+                if contacted_results_form.is_valid():
+                    contacted_result = contacted_results_form.save(commit=False)
+                    contacted_result.batting = batting
+                    contacted_result.save()
+                    return redirect('data')
+                else:
+                    context.update({
+                        'contacted_results_form': contacted_results_form,
+                        'batting': batting,
+                    })
+                    render(request, 'data.html', context)
 
-        elif request.POST['discrimination'] == 'decided_with_uncontacted':
-            uncontacted_results_form = UncontactedResultsForm(request.POST or None)
-            context.update({'uncontacted_results_form': uncontacted_results_form,})
+            # 最初のピッチャーとバッター名入力後のフォーム準備
+            else:
+                situation_form = SituationForm() # これからフォームを入力していくので引数なし
+                pitting_form = PittingForm()
+                batting_form = BattingForm()
+                context.update(
+                    {'situation_form': situation_form,
+                    'pitting_form': pitting_form,
+                    'batting_form': batting_form,}
+                )
+        # シチュエーション以下各フォームへの入力データありの場合(2回目以降)の共通処理
+        else:
+            situation_form = SituationForm(request.POST) # 前回入力データを引き継いでフォームに表示させる
+            pitting_form = PittingForm(request.POST)
+            batting_form = BattingForm(request.POST)
+            if situation_form.is_valid() and pitting_form.is_valid() and batting_form.is_valid():
+                situation = situation_form.save() # 入力データを保存
+                situation.save()
+                pitting = pitting_form.save(commit=False)
+                pitting.situation = situation
+                pitting.user = pitcher
+                pitting.save()
+                batting = batting_form.save(commit=False)
+                batting.pitting = pitting
+                batting.user = batter
+                batting.save()
+
+                # 打席結果未定時のフォーム準備
+                if request.POST['discrimination'] == 'undecided':
+                    context.update({
+                        'situation_form': situation_form,
+                        'pitting_form': pitting_form,
+                        'batting_form': batting_form,
+                        })
+
+                # 以下二つの条件分岐は、打席結果確定時のフォーム準備・データ保存
+                elif request.POST['discrimination'] == 'decided_with_contacted':
+                    contacted_results_form = ContactedResultsForm()
+                    context.update({
+                        'contacted_results_form': contacted_results_form,
+                        'batting': batting, # 打席結果保存する際に、該当するbattingと紐づけるため一緒に送る
+                        })
+
+                elif request.POST['discrimination'] == 'decided_with_uncontacted':
+                    uncontacted_results_form = UncontactedResultsForm(request.POST)
+                    if uncontacted_results_form.is_valid():
+                        uncontacted_result = uncontacted_results_form.save(commit=False)
+                        uncontacted_result.batting = batting
+                        context.update({'uncontacted_results_form': uncontacted_results_form,})
+
+            # 入力が有効でなかった場合
+            else:
+                context.update({
+                    'situation_form': situation_form,
+                    'pitting_form': pitting_form,
+                    'batting_form': batting_form,
+                    })
 
         return render(request, 'data.html', context)
-        
+            
     return render(request, 'data.html')
 
 
