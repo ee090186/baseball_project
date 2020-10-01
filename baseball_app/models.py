@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import CASCADE
 from django.db.models.fields import BooleanField, IntegerField
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 
 
 class Profile(models.Model):
@@ -36,9 +38,9 @@ class Profile(models.Model):
     gender = models.CharField('性別', max_length=5, choices=GENDER_CHOICES)
     birthday = models.DateField('生年月日', blank=True)
     email = models.EmailField('メールアドレス', blank=True)
-    height = models.FloatField('身長', blank=True)
-    weight = models.FloatField('体重', blank=True)
-    uniform_number = models.IntegerField('背番号', blank=True)
+    height = models.FloatField('身長(cm)', blank=True, validators=[MinValueValidator(50), MaxValueValidator(300)])
+    weight = models.FloatField('体重(kg)', blank=True, validators=[MinValueValidator(20), MaxValueValidator(200)])
+    uniform_number = models.IntegerField('背番号', blank=True, validators=[MinValueValidator(1), MaxValueValidator(999)])
     position = models.CharField('ポジション', max_length=7, choices=POSITION_CHOICES)
     batting_handedness = models.CharField('打ち方', max_length=20, choices=BATTING_HANDEDNESS_CHOICES)
     throwing_handedness = models.CharField('投げ方', max_length=21, choices=THROWING_HANDEDNESS_CHOICES)
@@ -143,7 +145,7 @@ class Pitting(models.Model):
     type_of_pitch = models.CharField('球種', max_length=20, choices=TYPE_OF_PITCH_CHOICES)
     pichout_or_waste = models.BooleanField('ピッチアウト,捨て球', default=False)
     bark = models.BooleanField('ボーク', default=False)
-    number_of_pitches = models.IntegerField('球数')
+    number_of_pitches = models.IntegerField('球数', validators=[MinValueValidator(1), MaxValueValidator(300)])
     def __str__(self):
         return self.user.username + '(' + str(self.number_of_pitches) + ')'
 
@@ -198,11 +200,17 @@ class ContactedResults(models.Model):
         ('2', '2'),
         ('3', '3'),
     )
+    SCORE_CHOICES = (
+        ('1', '1'),
+        ('2', '2'),
+        ('3', '3'),
+        ('4', '4'),
+    )
     batting = models.OneToOneField(Batting, on_delete=CASCADE)
     contacted_results = models.CharField('結果', max_length=30,choices=CONTACTED_RESULTS_CHOICES)
     catch_position_choices = models.CharField('打球方向', max_length=30, choices=CATCH_POSITION_CHOICES)
-    score = models.IntegerField('得点', blank=True, null=True)
-    added_number_of_outs = models.CharField('増えたアウトカウント', max_length=20, choices=ADDED_NUMBER_OF_OUTS_CHOICES)
+    score = models.CharField('得点', max_length=1, blank=True, null=True, choices=SCORE_CHOICES)
+    added_number_of_outs = models.CharField('増えたアウトカウント', max_length=20, blank=True, null=True, choices=ADDED_NUMBER_OF_OUTS_CHOICES)
     def __str__(self):
         return str(self.contacted_results)
 
@@ -221,10 +229,17 @@ class UncontactedResults(models.Model):
         ('2', '2'),
         ('3', '3'),
     )
+    SCORE_CHOICES = (
+        ('1', '1'),
+        ('2', '2'),
+        ('3', '3'),
+        ('4', '4'),
+    )
+
     batting = models.OneToOneField(Batting, on_delete=models.CASCADE)
     uncontacted_results = models.CharField('結果', max_length=20, choices=UNCONTACTED_RESULTS_CHOICES)
-    score = models.IntegerField('得点', blank=True, null=True)
-    added_number_of_outs = models.CharField('増えたアウトカウント', max_length=20, choices=ADDED_NUMBER_OF_OUTS_CHOICES)
+    score = models.CharField('得点', max_length=1, blank=True, null=True, choices=SCORE_CHOICES)
+    added_number_of_outs = models.CharField('増えたアウトカウント', max_length=20, blank=True, null=True, choices=ADDED_NUMBER_OF_OUTS_CHOICES)
     def __str__(self):
         return str(self.uncontacted_results)
 

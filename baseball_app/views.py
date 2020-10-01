@@ -146,6 +146,21 @@ def dataview(request):
                     })
                     render(request, 'data.html', context)
 
+            elif 'uncontacted_results' in request.POST:
+                uncontacted_results_form = UncontactedResultsForm(request.POST)
+                batting = Batting.objects.get(id=request.POST['batting_id'])
+                if uncontacted_results_form.is_valid():
+                    uncontacted_result = uncontacted_results_form.save(commit=False)
+                    uncontacted_result.batting = batting
+                    uncontacted_result.save()
+                    return redirect('data')
+                else:
+                    context.update({
+                        'uncontacted_results_form': uncontacted_results_form,
+                        'batting': batting
+                    })
+                    render(request, 'data.html', context)
+
             # 最初のピッチャーとバッター名入力後のフォーム準備
             else:
                 situation_form = SituationForm() # これからフォームを入力していくので引数なし
@@ -156,6 +171,7 @@ def dataview(request):
                     'pitting_form': pitting_form,
                     'batting_form': batting_form,}
                 )
+
         # シチュエーション以下各フォームへの入力データありの場合(2回目以降)の共通処理
         else:
             situation_form = SituationForm(request.POST) # 前回入力データを引き継いでフォームに表示させる
@@ -190,11 +206,11 @@ def dataview(request):
                         })
 
                 elif request.POST['discrimination'] == 'decided_with_uncontacted':
-                    uncontacted_results_form = UncontactedResultsForm(request.POST)
-                    if uncontacted_results_form.is_valid():
-                        uncontacted_result = uncontacted_results_form.save(commit=False)
-                        uncontacted_result.batting = batting
-                        context.update({'uncontacted_results_form': uncontacted_results_form,})
+                    uncontacted_results_form = UncontactedResultsForm()
+                    context.update({
+                        'uncontacted_results_form': uncontacted_results_form,
+                        'batting': batting, 
+                        })
 
             # 入力が有効でなかった場合
             else:

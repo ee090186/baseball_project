@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<!-- ifテンプレートタグ内はif contextでは、ifにかからない -->
+{% if pitchername and battername %}
+<div class="container">
+    <h1 class="h4 mb-4 font-weight-normal">{{ pitchername }} 対 {{ battername }}</h1>
+</div>
+
+<form action="" method="POST">{% csrf_token %}
+    
+    <table class="table">
+    {% if contacted_results_form %}
+        {{ contacted_results_form }}
+    {% elif uncontacted_results_form %}
+        {{ uncontacted_results_form }}
+    {% else %}
+        {{ situation_form }}
+        {{ pitting_form }}
+        {{ batting_form }}
+    {% endif %}
+    <tr>
+        <th>
+            <td>
+                <input type="submit" value="送信" class="btn btn-primary mt-2">
+                <!-- ピッチャー名とバッター名が毎回上部に表示されるように、hiddenで隠しデータとして送信 -->
+                <input type="hidden" name="pitchername" value="{{ pitcher.username }}">
+                <input type="hidden" name="battername" value="{{ batter.username }}">
+                {% if contacted_results_form %}<input type="hidden" name="batting_id" value="{{ batting.id }}">{% endif %}
+                {% if uncontacted_results_form %}<input type="hidden" name="batting_id" value="{{ batting.id }}">{% endif %}
+            </td>
+        </th>
+    </tr>
+    </table>
+
+</form>
+
+<!-- 以下、初回GET時の表示部分。ピッチャーとバッターのusernameをフォームに入力して送信する -->
+{% else %}
+<div class="container">
+<form class="form-signin" method="post">{% csrf_token %}
+    <h1 class="h3 mb-3 font-weight-normal">Please select pitcher and batter</h1>
+<!-- if部分大橋183P参考。IntegrityError実装時に使用 -->
+    {% if error %}
+    {{ error }}
+    {% endif %}
+    <label for="pitchername" class="sr-only">Pitcher(username)</label>
+    <input type="text" id="pitchername" class="form-control" placeholder="username" name="pitchername" required autofocus>
+    <label for="battername" class="sr-only">Batter(username)</label>
+    <input type="text" id="battername" class="form-control" placeholder="username" name="battername" required>
+    <div class="checkbox mb-3">
+    </div>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">決定</button>
+</form>
+</div>
+{% endif %}
+
+{% endblock content %}
