@@ -40,7 +40,7 @@ class Profile(models.Model):
     email = models.EmailField('メールアドレス', blank=True)
     height = models.FloatField('身長(cm)', blank=True, validators=[MinValueValidator(50), MaxValueValidator(300)])
     weight = models.FloatField('体重(kg)', blank=True, validators=[MinValueValidator(20), MaxValueValidator(200)])
-    uniform_number = models.IntegerField('背番号', blank=True, validators=[MinValueValidator(1), MaxValueValidator(999)])
+    uniform_number = models. PositiveIntegerField('背番号', blank=True, validators=[MinValueValidator(1), MaxValueValidator(999)])
     position = models.CharField('ポジション', max_length=7, choices=POSITION_CHOICES)
     batting_handedness = models.CharField('打ち方', max_length=20, choices=BATTING_HANDEDNESS_CHOICES)
     throwing_handedness = models.CharField('投げ方', max_length=21, choices=THROWING_HANDEDNESS_CHOICES)
@@ -145,7 +145,7 @@ class Pitting(models.Model):
     type_of_pitch = models.CharField('球種', max_length=20, choices=TYPE_OF_PITCH_CHOICES)
     pichout_or_waste = models.BooleanField('ピッチアウト,捨て球', default=False)
     bark = models.BooleanField('ボーク', default=False)
-    number_of_pitches = models.IntegerField('球数', validators=[MinValueValidator(1), MaxValueValidator(300)])
+    number_of_pitches = models.PositiveIntegerField('球数', validators=[MinValueValidator(1), MaxValueValidator(300)])
     def __str__(self):
         return self.user.username + '(' + str(self.number_of_pitches) + ')'
 
