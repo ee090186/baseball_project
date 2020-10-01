@@ -146,6 +146,7 @@ def dataview(request):
             'login_user': request.user,
         }
 
+        # ピッチャー・バッター名入力後もしくは打席結果入力後の、POST送信時
         if 'discrimination' not in request.POST:
             # 打席結果のPOST送信時の処理
             if 'contacted_results' in request.POST:
@@ -155,12 +156,14 @@ def dataview(request):
                     contacted_result = contacted_results_form.save(commit=False)
                     contacted_result.batting = batting
                     contacted_result.save()
+                    messages.success(request, '打席最終結果の入力が完了しました。次の対戦選手名を入力してください。')
                     return redirect('data')
                 else:
                     context.update({
                         'contacted_results_form': contacted_results_form,
                         'batting': batting,
                     })
+                    messages.error(request, '不正な入力データがあります。修正してください。')
                     render(request, 'data.html', context)
 
             elif 'uncontacted_results' in request.POST:
@@ -170,12 +173,14 @@ def dataview(request):
                     uncontacted_result = uncontacted_results_form.save(commit=False)
                     uncontacted_result.batting = batting
                     uncontacted_result.save()
+                    messages.success(request, '打席最終結果の入力が完了しました。次の対戦選手名を入力してください。')
                     return redirect('data')
                 else:
                     context.update({
                         'uncontacted_results_form': uncontacted_results_form,
                         'batting': batting
                     })
+                    messages.error(request, '不正な入力データがあります。修正してください。')
                     render(request, 'data.html', context)
 
             # 最初のピッチャーとバッター名入力後のフォーム準備
@@ -189,9 +194,9 @@ def dataview(request):
                     'batting_form': batting_form,}
                 )
 
-        # シチュエーション以下各フォームへの入力データありの場合(2回目以降)の共通処理
+        # シチュエーション以下各フォームへの入力後POST送信時(2回目以降)の共通処理
         else:
-            situation_form = SituationForm(request.POST) # 前回入力データを引き継いでフォームに表示させる
+            situation_form = SituationForm(request.POST) # 入力データを引き継いでフォームに表示させる
             pitting_form = PittingForm(request.POST)
             batting_form = BattingForm(request.POST)
             if situation_form.is_valid() and pitting_form.is_valid() and batting_form.is_valid():
@@ -205,6 +210,7 @@ def dataview(request):
                 batting.pitting = pitting
                 batting.user = batter
                 batting.save()
+                messages.success(request, '入力データを保存しました。')
 
                 # 打席結果未定時のフォーム準備
                 if request.POST['discrimination'] == 'undecided':
@@ -236,6 +242,7 @@ def dataview(request):
                     'pitting_form': pitting_form,
                     'batting_form': batting_form,
                     })
+                messages.error(request, '不正なデータ入力があります。修正してください。')
 
         return render(request, 'data.html', context)
             

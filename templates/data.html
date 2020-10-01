@@ -8,6 +8,7 @@
 <div class="container">
     <h1 class="h4 mb-4 font-weight-normal">{{ pitchername }} 対 {{ battername }}</h1>
 </div>
+{% include 'messages.html' %}
 
 <form action="" method="POST">{% csrf_token %}
     
@@ -55,6 +56,10 @@
     <button class="btn btn-lg btn-primary btn-block" type="submit">決定</button>
 </form>
 </div>
+{% include 'messages.html' %}
 {% endif %}
 
 {% endblock content %}
+
+{% block messages %}
+{% endblock messages %}
