@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from django.db import IntegrityError
 from django.template.context_processors import request
 from django.views.generic import CreateView, UpdateView
 from django.urls import reverse_lazy
@@ -15,18 +16,22 @@ def registerview(request):
     # or NoneでGet時はNoneとなり、引数なしのフォームを作る。
     user_form = UserCreateForm(request.POST or None)
     profile_form = ProfileForm(request.POST or None)
-    if request.method == "POST" and user_form.is_valid() and profile_form.is_valid():
 
-        # Userモデルの処理。ログインできるようis_activeをTrueにし保存。
-        user = user_form.save(commit=False)
-        user.is_active = True
-        user.save()
-
-        # Profileモデルの処理。Userモデルと紐づけ。
-        profile = profile_form.save(commit=False)
-        profile.user = user
-        profile.save()
-        return redirect('home')
+    if request.method == "POST":
+        if user_form.is_valid() and profile_form.is_valid():
+            # Userモデルの処理。ログインできるようis_activeをTrueにし保存。(意図した動作しないため、最後にlogin()部分追加)
+            user = user_form.save(commit=False)
+            user.is_active = True
+            user.save()
+            login(request, user)
+            # Profileモデルの処理。Userモデルと紐づけ。
+            profile = profile_form.save(commit=False)
+            profile.user = user
+            profile.save()
+            messages.success(request, '"' + user.username + '"' + 'の登録が完了しました。')
+            return redirect('home')
+        else:
+            messages.error(request, '不正な入力があります。修正してください。')
 
     context = {
         "user_form": user_form,
@@ -42,8 +47,10 @@ def loginview(request):
         user = authenticate(request, username=username_data, password=password_data)
         if user is not None:
             login(request, user)
+            messages.success(request, 'ログインしました。')
             return redirect('home')
         else:
+            messages.error(request, 'ログインに失敗しました。ユーザー名とパスワードが間違いないか確認してください。')
             return redirect('login')
 
     return render(request, 'login_register/login.html')
@@ -51,34 +58,43 @@ def loginview(request):
 
 def logoutview(request):
     logout(request)
+    messages.success(request, 'ログアウトしました')
     return redirect('login')
 
 
 @login_required()
 def homeview(request):
-    params = {
-        'login_user': request.user,
-    }
-
-    return render(request, 'home.html', params)
+    return render(request, 'home.html', {'login_user': request.user,})
     
 @login_required()
 def updateview(request, pk):
+    # modelクラスのインスタンス作成(既存のレコードより)
     user = get_object_or_404(User, pk=pk)
     profile = Profile.objects.get(user_id=pk)
+    # modelformクラスのインスタンス作成(更新したいデータはrequest.POSTで、既存レコードのデータはinstanceで指定)
     user_form = UserCreateForm(request.POST or None, instance=user)
     profile_form = ProfileForm(request.POST or None, instance=profile)
-    if request.method == "POST" and user_form.is_valid() and profile_form.is_valid():
-        user_form.save()
-        profile_form.save()
-        login(request, user) # if文部分でセッションが切れている（原因不明）ので、login_requiredにかからないよう追記
-        return redirect("home")
+
+    if request.method == "POST":
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            # if文部分でセッションが切れている（原因不明）ので、login_requiredにかからないよう追記
+            login(request, user)
+            messages.success(request, '登録情報を変更しました。')
+            return redirect("home")
+
+        # フォームへの入力がvalidでない場合
+        else:
+            messages.error(request, '不正なデータを入力しています。修正してください。')
 
     context = {
         "user_form": user_form,
         "profile_form": profile_form,
         'login_user': request.user
     }
+
+    # 初回GET時、もしくはif ~ .is_valid()でvalidでなかった場合
     return render(request, 'update.html', context)
 
 
@@ -106,6 +122,7 @@ def deleteview(request):
     user = request.user
     
     if request.method == 'POST':
+        messages.success(request, '"' + user.username + '"' + 'の登録を削除しました。')
         user.delete()
         return redirect('login')
     
