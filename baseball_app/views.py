@@ -258,4 +258,5 @@ def statsview(request):
             return render(request, 'stats.html')
         
 
+
     return render(request, 'stats.html')
