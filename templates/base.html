@@ -21,7 +21,8 @@
                 <li class="nav-item"><a href="{% url 'delete' %}" class="nav-link">delete</a></li>
                 <li class="nav-item"><a href="{% url 'data' %}" class="nav-link">data</a></li>
                 </ul>
-            <span>logined: <span class="h6">"{{login_user}}".</span> </span>
+            <!-- views側からcontextで渡さなくても、{{ request.user.username }}で、ログイン中のユーザーモデルインスタンスのusername属性参照できる -->
+            <span>logined: <span class="h6">"{{ request.user.username }}".</span> </span>
         </nav>
 
 

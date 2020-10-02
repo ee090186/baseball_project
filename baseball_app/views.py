@@ -64,7 +64,7 @@ def logoutview(request):
 
 @login_required()
 def homeview(request):
-    return render(request, 'home.html', {'login_user': request.user,})
+    return render(request, 'home.html')
     
 @login_required()
 def updateview(request, pk):
@@ -79,7 +79,7 @@ def updateview(request, pk):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            # if文部分でセッションが切れている（原因不明）ので、login_requiredにかからないよう追記
+            # if文部分でセッションが切れている?（原因不明）ので、login_requiredにかからないよう追記
             login(request, user)
             messages.success(request, '登録情報を変更しました。')
             return redirect("home")
@@ -91,7 +91,6 @@ def updateview(request, pk):
     context = {
         "user_form": user_form,
         "profile_form": profile_form,
-        'login_user': request.user
     }
 
     # 初回GET時、もしくはif ~ .is_valid()でvalidでなかった場合
@@ -112,7 +111,6 @@ def listview(request):
     context = {
         'teammate_profile': teammate_profile,
         'teammate_user': teammate_user,
-        'login_user': login_user,
     }
     return render(request, 'list.html', context)
 
@@ -143,7 +141,6 @@ def dataview(request):
             'battername': battername,
             'pitcher': pitcher,
             'batter': batter,
-            'login_user': request.user,
         }
 
         # ピッチャー・バッター名入力後もしくは打席結果入力後の、POST送信時
@@ -245,7 +242,7 @@ def dataview(request):
                 messages.error(request, '不正なデータ入力があります。修正してください。')
 
         return render(request, 'data.html', context)
-            
+
     return render(request, 'data.html')
 
 
