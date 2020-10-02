@@ -40,7 +40,7 @@ class Profile(models.Model):
     email = models.EmailField('メールアドレス', blank=True)
     height = models.FloatField('身長(cm)', blank=True, validators=[MinValueValidator(50), MaxValueValidator(300)])
     weight = models.FloatField('体重(kg)', blank=True, validators=[MinValueValidator(20), MaxValueValidator(200)])
-    uniform_number = models. PositiveIntegerField('背番号', blank=True, validators=[MinValueValidator(1), MaxValueValidator(999)])
+    uniform_number = models. PositiveIntegerField('背番号', blank=True, null=True, validators=[MinValueValidator(1), MaxValueValidator(999)])
     position = models.CharField('ポジション', max_length=7, choices=POSITION_CHOICES)
     batting_handedness = models.CharField('打ち方', max_length=20, choices=BATTING_HANDEDNESS_CHOICES)
     throwing_handedness = models.CharField('投げ方', max_length=21, choices=THROWING_HANDEDNESS_CHOICES)
@@ -195,22 +195,11 @@ class ContactedResults(models.Model):
         ('center', 'センター'),
         ('right', 'ライト'),
     )
-    ADDED_NUMBER_OF_OUTS_CHOICES = (
-        ('1', '1'),
-        ('2', '2'),
-        ('3', '3'),
-    )
-    SCORE_CHOICES = (
-        ('1', '1'),
-        ('2', '2'),
-        ('3', '3'),
-        ('4', '4'),
-    )
     batting = models.OneToOneField(Batting, on_delete=CASCADE)
     contacted_results = models.CharField('結果', max_length=30,choices=CONTACTED_RESULTS_CHOICES)
     catch_position_choices = models.CharField('打球方向', max_length=30, choices=CATCH_POSITION_CHOICES)
-    score = models.CharField('得点', max_length=1, blank=True, null=True, choices=SCORE_CHOICES)
-    added_number_of_outs = models.CharField('増えたアウトカウント', max_length=20, blank=True, null=True, choices=ADDED_NUMBER_OF_OUTS_CHOICES)
+    score = models.PositiveIntegerField('得点', default=0, validators=[MinValueValidator(0), MaxValueValidator(4)])
+    added_number_of_outs = models.PositiveIntegerField('増えたアウトカウント', default=0, validators=[MinValueValidator(0), MaxValueValidator(3)])
     def __str__(self):
         return str(self.contacted_results)
 
@@ -224,22 +213,10 @@ class UncontactedResults(models.Model):
         ('passed_ball', 'パスボール'),
         ('hit_by_pitch', '死球'),
     )
-    ADDED_NUMBER_OF_OUTS_CHOICES = (
-        ('1', '1'),
-        ('2', '2'),
-        ('3', '3'),
-    )
-    SCORE_CHOICES = (
-        ('1', '1'),
-        ('2', '2'),
-        ('3', '3'),
-        ('4', '4'),
-    )
-
     batting = models.OneToOneField(Batting, on_delete=models.CASCADE)
     uncontacted_results = models.CharField('結果', max_length=20, choices=UNCONTACTED_RESULTS_CHOICES)
-    score = models.CharField('得点', max_length=1, blank=True, null=True, choices=SCORE_CHOICES)
-    added_number_of_outs = models.CharField('増えたアウトカウント', max_length=20, blank=True, null=True, choices=ADDED_NUMBER_OF_OUTS_CHOICES)
+    score = models.PositiveIntegerField('得点', default=0, validators=[MinValueValidator(0), MaxValueValidator(4)])
+    added_number_of_outs = models.PositiveIntegerField('増えたアウトカウント', default=0, validators=[MinValueValidator(0), MaxValueValidator(3)])
     def __str__(self):
         return str(self.uncontacted_results)
 

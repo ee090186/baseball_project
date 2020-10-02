@@ -9,4 +9,9 @@
         <button class="btn btn-lg btn-primary btn-block" type="submit">決定</button>
     </form>
     </div>
+
+{% if rbi %}
+    <h3 class="h3 mb-3 font-weight-normal">{{ rbi }}</h3>
+{% endif %}
+    
 {% endblock content %}

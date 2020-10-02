@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.db import IntegrityError
+from django.db.models import Avg, Max, Min, Sum
 from django.template.context_processors import request
 from django.views.generic import CreateView, UpdateView
 from django.urls import reverse_lazy
@@ -256,7 +257,14 @@ def statsview(request):
         except User.DoesNotExist:
             messages.error(request, '存在しないユーザー名を入力しています。修正してください。')
             return render(request, 'stats.html')
-        
-
+        contacted_scr = ContactedResults.objects.filter(score__gt=1). \
+            filter(batting__user__id=player.id). \
+            aggregate(Sum('score'))
+        uncontacted_scr = UncontactedResults.objects.filter(score__gt=1). \
+            filter(uncontacted_results__in=['base_on_ball', 'hit_by_pitch'])
+        context = {
+            'rbi': str(contacted_scr['score__sum']),
+        }
+        return render(request, 'stats.html', context)
 
     return render(request, 'stats.html')
