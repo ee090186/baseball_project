@@ -127,13 +127,16 @@ def deleteview(request):
     return render(request, 'delete.html')
 
 
-
 @login_required()
 def dataview(request):
     if request.method == 'POST':
         # POST送信時の共通処理・準備
-        pitcher = User.objects.get(username=request.POST['pitchername']) # 以下ピッチャーとバッターのプロフィール側の名前取り出し部分長いためいずれ改善
-        batter = User.objects.get(username=request.POST['battername'])
+        try:
+            pitcher = User.objects.get(username=request.POST['pitchername']) # 以下ピッチャーとバッターのプロフィール側の名前取り出し部分いずれ改善
+            batter = User.objects.get(username=request.POST['battername'])
+        except User.DoesNotExist:
+            messages.error(request, '存在しないユーザー名を入力しています。修正してください。')
+            return render(request, 'data.html')
         pitchername = Profile.objects.get(user=pitcher).name
         battername = Profile.objects.get(user=batter).name
         context = {
@@ -245,4 +248,14 @@ def dataview(request):
 
     return render(request, 'data.html')
 
+@login_required()
+def statsview(request):
+    if request.method == 'POST':
+        try:
+            player = User.objects.get(username=request.POST['playername'])
+        except User.DoesNotExist:
+            messages.error(request, '存在しないユーザー名を入力しています。修正してください。')
+            return render(request, 'stats.html')
+        
 
+    return render(request, 'stats.html')

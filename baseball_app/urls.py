@@ -2,7 +2,7 @@ from os import name
 from django.contrib import admin
 from django.db.models.query_utils import PathInfo
 from django.urls import path
-from .views import registerview, loginview, homeview, logoutview, updateview, listview, deleteview, dataview
+from .views import registerview, loginview, homeview, logoutview, updateview, listview, deleteview, dataview, statsview
 
 
 
@@ -16,5 +16,6 @@ urlpatterns = [
         path('list/', listview, name='list'),
         path('delete/', deleteview, name='delete'),
         path('data/', dataview, name='data'),
+        path('stats/', statsview, name='stats'),
         
 ]
