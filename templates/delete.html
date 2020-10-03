@@ -1,8 +1,14 @@
 {% extends 'base.html' %}
 
+{% block header %}
+<h1 class="display-4 text-primary">Delete</h1>
+<p class="caption">※下に表示しているログイン中のユーザーを削除します。
+</p>
+{% endblock header %}
+
+
 {% block content %}
 <body class="container">
-    <p>※以下のユーザーを削除します</p>
     <table class="table">
         <form action="" method="POST">{% csrf_token %}
             <tr>

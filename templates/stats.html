@@ -1,16 +1,25 @@
 {% extends 'base.html' %}
 
+{% block title %}Stats{% endblock title %}
+
+{% block header %}
+<h1 class="display-4 text-primary">Stats</h1>
+<p class="caption">※選手のユーザー名を入力して決定ボタンを押すと、
+    Dataフォーム画面で入力した対戦データから計算した指標を確認できます。
+</p>
+{% endblock header %}
+
 {% block content %}
-<div class="container">
-    <form class="form-signin" method="post">{% csrf_token %}
+<!-- <div class="container"> nav-barと横幅が合わないため変更-->
+    <form  method="post">{% csrf_token %}
         <h1 class="h3 mb-3 font-weight-normal">Please select player</h1>
-        <label for="playername" class="sr-only">Player(username)</label>
+        <!-- <label for="playername" class="sr-only">Player(username)</label> -->
         <input type="text" id="playername" class="form-control" placeholder="username" name="playername" required autofocus>
         <button class="btn btn-lg btn-primary btn-block" type="submit">決定</button>
     </form>
-    </div>
+    <!-- </div> -->
 
-{% if rbi %}
+{% if player %}
 <body class="container">
     <hr>
     <table class="table">
@@ -23,9 +32,9 @@
         </tr>
         <tr>
             <td>{{ batting_aberage }}</td>
-            <td>{{ rbi }}</td>
+            <td>{{ runs_batted_in }}</td>
             <td>{{ num_of_homerun }}</td>
-            <td></td>
+            <td>{{ on_base_percentage }}</td>
             <td>{{ slugging_average }}</td>
         </tr>
     </table>

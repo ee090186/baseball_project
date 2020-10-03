@@ -144,6 +144,7 @@ class Pitting(models.Model):
     speed = models.CharField('球速', max_length=20, choices=SPEED_CHOICES)
     type_of_pitch = models.CharField('球種', max_length=20, choices=TYPE_OF_PITCH_CHOICES)
     pichout_or_waste = models.BooleanField('ピッチアウト,捨て球', default=False)
+    widpit_or_passedball = models.BooleanField('ワイルドピッチ,パスボール', default=False)
     bark = models.BooleanField('ボーク', default=False)
     number_of_pitches = models.PositiveIntegerField('球数', validators=[MinValueValidator(1), MaxValueValidator(300)])
     def __str__(self):
@@ -157,6 +158,7 @@ class Batting(models.Model):
         ('swing_and_contact', 'ゴロ・フライ・ライナー・単打・長打'),
         ('foul', 'ファール'),
         ('taken', '見送り'),
+        ('sacrifice', '犠打'),
         ('other', 'その他'),
     )
     DISCRIMINATION_CHOICES = (
@@ -172,7 +174,7 @@ class Batting(models.Model):
         return self.user.username + self.batting
 
 
-
+    
 class ContactedResults(models.Model):
     CONTACTED_RESULTS_CHOICES = (
         ('groundball', 'ゴロ'),
@@ -209,14 +211,14 @@ class UncontactedResults(models.Model):
     UNCONTACTED_RESULTS_CHOICES = (
         ('strikeout', '三振'),
         ('base_on_ball', '四球'),
-        ('wild_pit', 'ワイルドピッチ'),
-        ('passed_ball', 'パスボール'),
         ('hit_by_pitch', '死球'),
+        ('other', 'その他'),
     )
     batting = models.OneToOneField(Batting, on_delete=models.CASCADE)
     uncontacted_results = models.CharField('結果', max_length=20, choices=UNCONTACTED_RESULTS_CHOICES)
     score = models.PositiveIntegerField('得点', default=0, validators=[MinValueValidator(0), MaxValueValidator(4)])
     added_number_of_outs = models.PositiveIntegerField('増えたアウトカウント', default=0, validators=[MinValueValidator(0), MaxValueValidator(3)])
+    uncaught_third_strike = models.BooleanField('振り逃げ', default=False)
     def __str__(self):
         return str(self.uncontacted_results)
 

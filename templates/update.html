@@ -1,5 +1,13 @@
 {% extends 'base.html' %}
 
+{% block header %}
+<h1 class="display-4 text-primary">Update</h1>
+<p class="caption">※ログイン中のユーザーの登録情報を表示しています。
+    登録情報を変更したい場合は変更したい部分を書き変えて、
+    パスワードフォームにパスワードを入力し、決定ボタンを押すと登録情報を変更できます。
+</p>
+{% endblock header %}
+
 {% block content %}
 <form action="" method="POST">{% csrf_token %}
     
@@ -10,7 +18,7 @@
     <tr>
         <th>
             <td>
-                <input type="submit" value="送信" class="btn btn-primary mt-2"></table>
+                <input type="submit" value="決定" class="btn btn-primary mt-2"></table>
             </td>
         </th>
     </tr>

@@ -7,8 +7,8 @@ from .views import registerview, loginview, homeview, logoutview, updateview, li
 
 
 urlpatterns = [
-        path('admin/', admin.site.urls, name='admin'),
-        path('register/', registerview, name='register_user'),
+        path('', loginview, name='login'),
+        path('register/', registerview, name='register'),
         path('login/', loginview, name='login'),
         path('home/', homeview, name='home'),
         path('logout/', logoutview, name='logout'),

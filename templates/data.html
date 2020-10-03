@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 
-
+{% block header %}
+<h1 class="display-4 text-primary">Data</h1>
+<p class="caption">※ピッチャーとバッターのユーザー名を入力して決定ボタンを押すと、
+    入力した選手間での一球毎の対戦データを記録するフォーム画面へ遷移します。
+</p>
+{% endblock header %}
 {% block content %}
 
 <!-- ifテンプレートタグ内はif contextでは、ifにかからない -->
@@ -40,9 +45,9 @@
 
 <!-- 以下、初回GET時の表示部分。ピッチャーとバッターのusernameをフォームに入力して送信する -->
 {% else %}
-<div class="container">
+<!-- <div class="container"> -->
 <form class="form-signin" method="post">{% csrf_token %}
-    <h1 class="h3 mb-3 font-weight-normal">Please select pitcher and batter</h1>
+    <!-- <h1 class="h3 mb-3 font-weight-normal">Please select pitcher and batter</h1> -->
 <!-- if部分大橋183P参考。IntegrityError実装時に使用 -->
     {% if error %}
     {{ error }}
@@ -55,7 +60,7 @@
     </div>
     <button class="btn btn-lg btn-primary btn-block" type="submit">決定</button>
 </form>
-</div>
+<!-- </div> -->
 {% include 'messages.html' %}
 {% endif %}
 

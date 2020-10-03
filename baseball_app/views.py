@@ -261,7 +261,7 @@ def statsview(request):
             messages.error(request, '存在しないユーザー名を入力しています。修正してください。')
             return render(request, 'stats.html')
 
-        # 打点計算
+        # 打点
         contacted_scr = ContactedResults.objects.filter(score__gt=1). \
                         filter(batting__user__id=player.id). \
                         aggregate(Sum('score'))
@@ -271,21 +271,27 @@ def statsview(request):
                             batting__user__id=player.id
                             ). \
                             aggregate(Sum('score'))
-        rbi = sum(transnone_to_zero(contacted_scr['score__sum'], uncontacted_scr['score__sum'])) # エラー線原因不明。
+        runs_batted_in = sum(transnone_to_zero(contacted_scr['score__sum'], uncontacted_scr['score__sum'])) # エラー線原因不明。
 
         # 打率
         contacted_qset = ContactedResults.objects.filter(batting__user__id=player.id)
         contacted_at_bat = contacted_qset.count()
-        uncontacted_at_bat = UncontactedResults.objects.filter(batting__user__id=player.id). \
-                exclude(uncontacted_results__in=['base_on_ball', 'hit_by_pitch']).count()
-        at_but = contacted_at_bat + uncontacted_at_bat # 打数（＝打席数－四死球－犠打）
+        sac_qset = contacted_qset.filter(batting__batting='sacrifice')
+        num_of_sac = sac_qset.count() # 犠打数
+        uncontacted_qset = UncontactedResults.objects.filter(batting__user__id=player.id)
+        num_of_strikeout = uncontacted_qset.filter(uncontacted_results='strikeout').count() # 三振数
+        num_of_bob_and_hbp = uncontacted_qset.filter(uncontacted_results__in=
+                            ['base_on_ball', 'hit_by_pitch']).count() # 四死球数
+        uncontacted_at_bat = num_of_strikeout
+        at_but = contacted_at_bat + uncontacted_at_bat - num_of_sac # 打数（＝打席数－四死球－犠打）
         hit_qset = contacted_qset.exclude(contacted_results__in=
                     ['groundball', 'flyball', 'linedrive'])
         num_of_hits = hit_qset.count() # 安打数
         batting_average = round(num_of_hits / at_but, 5) * 10
         
         # 本塁打数
-        num_of_homerun = ContactedResults.objects.filter(contacted_results='homerun',
+        num_of_homerun = ContactedResults.objects.filter(contacted_results__in=
+                        ['inside_the_park_homerun','homerun'],
                         batting__user__id=player.id).count()
 
         # 長打率
@@ -296,14 +302,17 @@ def statsview(request):
                             / at_but, 3)
 
         # 出塁率
-        
-        on_base_percentage = 
+        num_of_sacfly = sac_qset.filter(contacted_results='flyball').count() # 犠牲フライ数
+        on_base_percentage = round((num_of_hits + num_of_bob_and_hbp) 
+                            / (at_but + num_of_bob_and_hbp + num_of_sacfly), 3)
+
 
         context = {
+            'player': player,
             'batting_aberage': batting_average,
-            'rbi': rbi,
+            'runs_batted_in': runs_batted_in,
             'num_of_homerun': num_of_homerun,
-            
+            'on_base_percentage': on_base_percentage,
             'slugging_average': slugging_average,
         }
         return render(request, 'stats.html', context)
