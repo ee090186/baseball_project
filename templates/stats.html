@@ -11,7 +11,25 @@
     </div>
 
 {% if rbi %}
-    <h3 class="h3 mb-3 font-weight-normal">{{ rbi }}</h3>
+<body class="container">
+    <hr>
+    <table class="table">
+        <tr>
+            <th>打率</th>
+            <th>打点</th>
+            <th>本塁打</th>
+            <th>出塁率</th>
+            <th>長打率(塁打期待値)</th>
+        </tr>
+        <tr>
+            <td>{{ batting_aberage }}</td>
+            <td>{{ rbi }}</td>
+            <td>{{ num_of_homerun }}</td>
+            <td></td>
+            <td>{{ slugging_average }}</td>
+        </tr>
+    </table>
+</body>
 {% endif %}
     
 {% endblock content %}

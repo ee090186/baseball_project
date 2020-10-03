@@ -1,3 +1,4 @@
+from django.db.models import aggregates
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -249,22 +250,80 @@ def dataview(request):
 
     return render(request, 'data.html')
 
+
 @login_required()
 def statsview(request):
     if request.method == 'POST':
+        # ユーザー名のバリデーション
         try:
             player = User.objects.get(username=request.POST['playername'])
         except User.DoesNotExist:
             messages.error(request, '存在しないユーザー名を入力しています。修正してください。')
             return render(request, 'stats.html')
+
+        # 打点計算
         contacted_scr = ContactedResults.objects.filter(score__gt=1). \
-            filter(batting__user__id=player.id). \
-            aggregate(Sum('score'))
-        uncontacted_scr = UncontactedResults.objects.filter(score__gt=1). \
-            filter(uncontacted_results__in=['base_on_ball', 'hit_by_pitch'])
+                        filter(batting__user__id=player.id). \
+                        aggregate(Sum('score'))
+        uncontacted_scr = UncontactedResults.objects.filter(
+                            score__gt=1,
+                            uncontacted_results__in=['base_on_ball', 'hit_by_pitch'],
+                            batting__user__id=player.id
+                            ). \
+                            aggregate(Sum('score'))
+        rbi = sum(transnone_to_zero(contacted_scr['score__sum'], uncontacted_scr['score__sum'])) # エラー線原因不明。
+
+        # 打率
+        contacted_qset = ContactedResults.objects.filter(batting__user__id=player.id)
+        contacted_at_bat = contacted_qset.count()
+        uncontacted_at_bat = UncontactedResults.objects.filter(batting__user__id=player.id). \
+                exclude(uncontacted_results__in=['base_on_ball', 'hit_by_pitch']).count()
+        at_but = contacted_at_bat + uncontacted_at_bat # 打数（＝打席数－四死球－犠打）
+        hit_qset = contacted_qset.exclude(contacted_results__in=
+                    ['groundball', 'flyball', 'linedrive'])
+        num_of_hits = hit_qset.count() # 安打数
+        batting_average = round(num_of_hits / at_but, 5) * 10
+        
+        # 本塁打数
+        num_of_homerun = ContactedResults.objects.filter(contacted_results='homerun',
+                        batting__user__id=player.id).count()
+
+        # 長打率
+        num_of_single = hit_qset.filter(contacted_results='single').count()
+        num_of_double = hit_qset.filter(contacted_results='double').count()
+        num_of_triple = hit_qset.filter(contacted_results='triple').count()
+        slugging_average = round((num_of_single + num_of_double*2 + num_of_triple*3 + num_of_homerun*4)
+                            / at_but, 3)
+
+        # 出塁率
+        
+        on_base_percentage = 
+
         context = {
-            'rbi': str(contacted_scr['score__sum']),
+            'batting_aberage': batting_average,
+            'rbi': rbi,
+            'num_of_homerun': num_of_homerun,
+            
+            'slugging_average': slugging_average,
         }
         return render(request, 'stats.html', context)
 
     return render(request, 'stats.html')
+
+
+
+def transnone_to_zero(*args):
+    if len(args) >= 2:
+        lst = []
+        for obj in args:
+            if obj == None:
+                lst.append(0) 
+            else:
+                lst.append(obj)
+        return lst
+
+    else:
+        if args == None:
+            return 0
+        
+        return args
