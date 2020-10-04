@@ -1,10 +1,18 @@
 {% extends 'login_register/login_register_base.html' %}
+{% block header %}
+<h1 class="display-4 text-primary">Login</h1>
+<p class="caption">※ユーザー名とパスワードを入力して「login」ボタンを押してください。
+    ユーザー登録がお済みでない方は、一番下の「register」ボタンを押して
+    ユーザー登録してください。
+</p>
+{% include 'messages.html' %}
+{% endblock header %}
 
 
 {% block content %}
 <!-- <div class="container"> -->
 <form class="form-signin" method="post">{% csrf_token %}
-    <h1 class="h3 mb-3 font-weight-normal">Please login</h1>
+    <!-- <h1 class="h3 mb-3 font-weight-normal">Please login</h1> -->
     <label for="inputEmail" class="sr-only">Username</label>
     <input type="text" id="inputEmail" class="form-control" placeholder="username" name="username_data" required autofocus>
     <label for="inputPassword" class="sr-only">Password</label>
@@ -15,7 +23,11 @@
 </form>
 <br>
 <form action="{% url 'register' %}" class="form-signin">
-    <button class="btn btn-lg btn-primary btn-block" type="submit">ユーザー登録</button>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">register</button>
 </form>
 <!-- </div> -->
 {% endblock content %}
+
+
+{% block messages %}
+{% endblock messages %}

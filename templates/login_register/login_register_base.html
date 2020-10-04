@@ -16,8 +16,11 @@
     <body class="container">
         {% block content %}
         {% endblock content %}
-
+        
+        {% block messages %}
         {% include 'messages.html' %}
+        {% endblock messages %}
+        
 
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->

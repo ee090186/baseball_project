@@ -6,6 +6,7 @@
     登録情報を変更したい場合は変更したい部分を書き変えて、
     パスワードフォームにパスワードを入力し、決定ボタンを押すと登録情報を変更できます。
 </p>
+{% include 'messages.html' %}
 {% endblock header %}
 
 {% block content %}
@@ -24,3 +25,6 @@
     </tr>
 </form>
 {% endblock content %}
+
+{% block messages %}
+{% endblock messages %}

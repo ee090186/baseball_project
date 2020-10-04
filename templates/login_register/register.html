@@ -1,5 +1,12 @@
 {% extends "login_register/login_register_base.html" %}
 
+{% block header %}
+<h1 class="display-4 text-primary">Register</h1>
+<p class="caption">※必要事項を入力し、送信ボタンを押してください。
+</p>
+{% include 'messages.html' %}
+{% endblock header %}
+
 
 {% block content %}
 
@@ -19,3 +26,6 @@
 </form>
 
 {% endblock %}
+
+{% block messages %}
+{% endblock messages %}

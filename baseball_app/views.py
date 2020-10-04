@@ -212,7 +212,7 @@ def dataview(request):
                 batting.pitting = pitting
                 batting.user = batter
                 batting.save()
-                messages.success(request, '入力データを保存しました。')
+                
 
                 # 打席結果未定時のフォーム準備
                 if request.POST['discrimination'] == 'undecided':
@@ -221,6 +221,7 @@ def dataview(request):
                         'pitting_form': pitting_form,
                         'batting_form': batting_form,
                         })
+                    messages.success(request, '入力データを保存しました。')
 
                 # 以下二つの条件分岐は、打席結果確定時のフォーム準備・データ保存
                 elif request.POST['discrimination'] == 'decided_with_contacted':
@@ -229,14 +230,14 @@ def dataview(request):
                         'contacted_results_form': contacted_results_form,
                         'batting': batting, # 打席結果保存する際に、該当するbattingと紐づけるため一緒に送る
                         })
-
+                    messages.success(request, '入力データを保存しました。打席最終結果詳細を入力して送信してください。')
                 elif request.POST['discrimination'] == 'decided_with_uncontacted':
                     uncontacted_results_form = UncontactedResultsForm()
                     context.update({
                         'uncontacted_results_form': uncontacted_results_form,
                         'batting': batting, 
                         })
-
+                    messages.success(request, '入力データを保存しました。打席最終結果詳細を入力して送信してください。')
             # 入力が有効でなかった場合
             else:
                 context.update({
@@ -271,7 +272,8 @@ def statsview(request):
                             batting__user__id=player.id
                             ). \
                             aggregate(Sum('score'))
-        runs_batted_in = sum(transnone_to_zero(contacted_scr['score__sum'], uncontacted_scr['score__sum'])) # エラー線原因不明。
+        
+        _batted_in = sum(transnone_to_zero(contacted_scr['score__sum'], uncontacted_scr['score__sum'])) # エラー線原因不明。
 
         # 打率
         contacted_qset = ContactedResults.objects.filter(batting__user__id=player.id)
