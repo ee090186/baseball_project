@@ -46,7 +46,7 @@ class PittingForm(forms.ModelForm):
     class Meta:
         model = Pitting
         fields = (
-            'side_corse', 'height_corse', 'speed', 'type_of_pitch', 'pichout_or_waste', 'bark', 'number_of_pitches',
+            'side_corse', 'height_corse', 'speed', 'type_of_pitch', 'pichout_or_waste', 'wildpit_or_passedball', 'bark', 'number_of_pitches',
         )
 
 

@@ -144,7 +144,7 @@ class Pitting(models.Model):
     speed = models.CharField('球速', max_length=20, choices=SPEED_CHOICES)
     type_of_pitch = models.CharField('球種', max_length=20, choices=TYPE_OF_PITCH_CHOICES)
     pichout_or_waste = models.BooleanField('ピッチアウト,捨て球', default=False)
-    widpit_or_passedball = models.BooleanField('ワイルドピッチ,パスボール', default=False)
+    wildpit_or_passedball = models.BooleanField('ワイルドピッチ,パスボール', default=False)
     bark = models.BooleanField('ボーク', default=False)
     number_of_pitches = models.PositiveIntegerField('球数', validators=[MinValueValidator(1), MaxValueValidator(300)])
     def __str__(self):
