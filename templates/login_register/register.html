@@ -2,7 +2,9 @@
 
 {% block header %}
 <h1 class="display-4 text-primary">Register</h1>
-<p class="caption">※必要事項を入力し、送信ボタンを押してください。
+<p class="caption">※（必須）の欄は必ず入力してから送信ボタンを押してください。
+    ユーザー名は個人を識別するデータのため、既に登録済みのデータと同じ場合エラーとなります。
+    氏名の欄は重複しても登録できます。
 </p>
 {% include 'messages.html' %}
 {% endblock header %}
