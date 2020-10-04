@@ -12,9 +12,10 @@
 {% block content %}
 <!-- <div class="container"> nav-barと横幅が合わないため変更-->
     <form  method="post">{% csrf_token %}
-        <h1 class="h3 mb-3 font-weight-normal">Please select player</h1>
+        <!-- <h1 class="h3 mb-3 font-weight-normal">Please select player</h1> -->
         <!-- <label for="playername" class="sr-only">Player(username)</label> -->
         <input type="text" id="playername" class="form-control" placeholder="username" name="playername" required autofocus>
+        <div class="checkbox mb-3"></div>
         <button class="btn btn-lg btn-primary btn-block" type="submit">決定</button>
     </form>
     <!-- </div> -->
@@ -24,11 +25,11 @@
     <hr>
     <table class="table">
         <tr>
-            <th>打率</th>
+            <th>打率（安打/（打席数－（四死球＋犠打＋犠飛）））</th>
             <th>打点</th>
-            <th>本塁打</th>
-            <th>出塁率</th>
-            <th>長打率(塁打期待値)</th>
+            <th>本塁打数</th>
+            <th>出塁率（（安打＋四死球）/（打数＋四死球＋犠飛））</th>
+            <th>長打率（塁打数/打数）</th>
         </tr>
         <tr>
             <td>{{ batting_aberage }}</td>
@@ -37,6 +38,30 @@
             <td>{{ on_base_percentage }}</td>
             <td>{{ slugging_average }}</td>
         </tr>
+    {% if pitcher_dstct %}
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        <tr>
+            <th>失点率（失点/（獲得アウト数/27）</th>
+            <th>K%（三振/打席数）</th>
+            <th>HR/9（被本塁打/打席数）</th>
+            <th>BB%（与四球数/打席数）</th>
+            <th>K-BB%（（三振数－与四球数）/打席数）</th>
+        </tr>
+        <tr>
+            <td>{{ run_average }}</td>
+            <td>{{ k_percentage }}</td>
+            <td>{{ hr_per_9 }}</td>
+            <td>{{ bb_percentage }}</td>
+            <td>{{ k_bb_percentage }}</td>
+        </tr>
+    {% endif %}
+            
     </table>
 </body>
 {% endif %}

@@ -13,7 +13,7 @@ class Profile(models.Model):
         ('other', 'その他'),
     )
     POSITION_CHOICES = (
-        ('picher', 'ピッチャー'),
+        ('pitcher', 'ピッチャー'),
         ('catcher', 'キャッチャー'),
         ('first', 'ファースト'),
         ('second', 'セカンド'),

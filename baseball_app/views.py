@@ -33,7 +33,7 @@ def registerview(request):
             messages.success(request, '"' + user.username + '"' + 'の登録が完了しました。')
             return redirect('home')
         else:
-            messages.error(request, '不正な入力があります。修正してください。')
+            messages.error(request, '有効でない入力があります。修正してください。')
 
     context = {
         "user_form": user_form,
@@ -58,16 +58,20 @@ def loginview(request):
     return render(request, 'login_register/login.html')
 
 
+
 def logoutview(request):
     logout(request)
     messages.success(request, 'ログアウトしました')
     return redirect('login')
 
 
+
 @login_required()
 def homeview(request):
     return render(request, 'home.html')
-    
+
+
+
 @login_required()
 def updateview(request, pk):
     # modelクラスのインスタンス作成(既存のレコードより)
@@ -88,7 +92,7 @@ def updateview(request, pk):
 
         # フォームへの入力がvalidでない場合
         else:
-            messages.error(request, '不正なデータを入力しています。修正してください。')
+            messages.error(request, '有効でないデータを入力しています。修正してください。')
 
     context = {
         "user_form": user_form,
@@ -97,6 +101,7 @@ def updateview(request, pk):
 
     # 初回GET時、もしくはif ~ .is_valid()でvalidでなかった場合
     return render(request, 'update.html', context)
+
 
 
 @login_required()
@@ -117,6 +122,7 @@ def listview(request):
     return render(request, 'list.html', context)
 
 
+
 @login_required()
 def deleteview(request):
     user = request.user
@@ -127,6 +133,7 @@ def deleteview(request):
         return redirect('login')
     
     return render(request, 'delete.html')
+
 
 
 @login_required()
@@ -165,7 +172,7 @@ def dataview(request):
                         'contacted_results_form': contacted_results_form,
                         'batting': batting,
                     })
-                    messages.error(request, '不正な入力データがあります。修正してください。')
+                    messages.error(request, '有効でない入力データがあります。修正してください。')
                     render(request, 'data.html', context)
 
             elif 'uncontacted_results' in request.POST:
@@ -182,7 +189,7 @@ def dataview(request):
                         'uncontacted_results_form': uncontacted_results_form,
                         'batting': batting
                     })
-                    messages.error(request, '不正な入力データがあります。修正してください。')
+                    messages.error(request, '有効でない入力データがあります。修正してください。')
                     render(request, 'data.html', context)
 
             # 最初のピッチャーとバッター名入力後のフォーム準備
@@ -245,11 +252,12 @@ def dataview(request):
                     'pitting_form': pitting_form,
                     'batting_form': batting_form,
                     })
-                messages.error(request, '不正なデータ入力があります。修正してください。')
+                messages.error(request, '有効でない入力データがあります。修正してください。')
 
         return render(request, 'data.html', context)
 
     return render(request, 'data.html')
+
 
 
 @login_required()
@@ -273,7 +281,7 @@ def statsview(request):
                             ). \
                             aggregate(Sum('score'))
         
-        _batted_in = sum(transnone_to_zero(contacted_scr['score__sum'], uncontacted_scr['score__sum'])) # エラー線原因不明。
+        runs_batted_in = sum(transnone_to_zero(contacted_scr['score__sum'], uncontacted_scr['score__sum'])) # エラー線原因不明。
 
         # 打率
         contacted_qset = ContactedResults.objects.filter(batting__user__id=player.id)
@@ -308,7 +316,6 @@ def statsview(request):
         on_base_percentage = round((num_of_hits + num_of_bob_and_hbp) 
                             / (at_but + num_of_bob_and_hbp + num_of_sacfly), 3)
 
-
         context = {
             'player': player,
             'batting_aberage': batting_average,
@@ -317,6 +324,55 @@ def statsview(request):
             'on_base_percentage': on_base_percentage,
             'slugging_average': slugging_average,
         }
+
+        # playerのpositionがpitcherの場合、投手用の指標を準備
+        if Profile.objects.get(user=player).position == 'pitcher':
+            pitcher_dstct = True
+            # 失点率
+            contacted_qset = ContactedResults.objects.filter(batting__pitting__user=player)
+            cnt_num_of_outs = contacted_qset.aggregate(Sum('added_number_of_outs')) # 獲得アウト数1
+            contacted_runs = contacted_qset.filter(score__gt=1).aggregate(Sum('score')) # 失点数1
+            uncontacted_qset = UncontactedResults.objects.filter(batting__pitting__user=player)
+            uct_num_of_outs = uncontacted_qset.aggregate(Sum('added_number_of_outs')) # 獲得アウト数2
+            uncontacted_runs = uncontacted_qset.filter(score__gt=1).aggregate(Sum('score')) # 失点数2
+            num_of_outs = sum(transnone_to_zero(
+                cnt_num_of_outs['added_number_of_outs__sum'],
+                uct_num_of_outs['added_number_of_outs__sum'])) # 獲得アウト数合計
+            earned_runs = sum(transnone_to_zero(
+                contacted_runs['score__sum'],
+                uncontacted_runs['score__sum'])) # 失点数（自責点の概念を無視する）
+            
+            run_average = earned_runs / (num_of_outs / 27) # 失点率
+
+            # 奪三振率
+            cnt_batsman_faced = contacted_qset.count() # 打席数1
+            uct_batsman_faced = uncontacted_qset.count() # 打席数2
+            batsman_faced = cnt_batsman_faced + uct_batsman_faced # 打席数合計
+            num_of_strikeout = uncontacted_qset.filter(
+                               uncontacted_results='strikeout').count() # 奪三振数
+            k_percentage = round(num_of_strikeout / batsman_faced, 3)
+
+            # 被本塁打率
+            earned_hr = contacted_qset.filter(contacted_results__in=
+                            ['homerun', 'inside_the_park_homerun']).count() # 被本塁打数
+            hr_per_9 = round(earned_hr/batsman_faced, 3)
+            
+            # 与四球率
+            num_of_bb = uncontacted_qset.filter(uncontacted_results='base_on_ball').count() # 四球数
+            bb_percentage = round(num_of_bb / batsman_faced, 3)
+
+            # K-BB%
+            k_bb_percentage = round((num_of_strikeout - num_of_bb)/batsman_faced, 3) # (奪三振数－四球数)/打席数
+            
+            context.update({
+                'pitcher_dstct': pitcher_dstct,
+                'run_average': run_average,
+                'k_percentage': k_percentage,
+                'hr_per_9': hr_per_9,
+                'bb_percentage': bb_percentage,
+                'k_bb_percentage': k_bb_percentage,
+                })
+
         return render(request, 'stats.html', context)
 
     return render(request, 'stats.html')
