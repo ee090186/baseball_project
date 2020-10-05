@@ -6,9 +6,9 @@ from .models import Profile, Situation, Pitting, Batting, ContactedResults, Unco
 
 
 class UserCreateForm(UserCreationForm):
-    username = forms.CharField(label='ユーザー名（必須）', \
+    username = forms.CharField(label='ユーザー名（必須, 全角スペースは使えません）', \
         widget=forms.TextInput(attrs={'class':'form-control'}))
-    password1 = forms.CharField(label='パスワード（必須）', \
+    password1 = forms.CharField(label='パスワード（必須, 8文字以上）', \
         widget=forms.PasswordInput(attrs={'class':'form-control'}))
     password2 = forms.CharField(label='パスワード(再確認)', \
         widget=forms.PasswordInput(attrs={'class':'form-control'}))

@@ -2,11 +2,10 @@
 
 {% block header %}
 <h1 class="display-4 text-primary">Register</h1>
-<p class="caption">※（必須）の欄は必ず入力してから送信ボタンを押してください。
-    ユーザー名は個人を識別するデータのため、既に登録済みのデータと同じ場合エラーとなります。
+<p class="caption">※（必須）の欄は必ず入力してください。
+    ユーザー名は個人を識別するデータのため、既に同じ名前で登録がある場合エラーとなります。
     氏名の欄は重複しても登録できます。
 </p>
-{% include 'messages.html' %}
 {% endblock header %}
 
 
@@ -29,5 +28,3 @@
 
 {% endblock %}
 
-{% block messages %}
-{% endblock messages %}

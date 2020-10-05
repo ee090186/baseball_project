@@ -2,11 +2,10 @@
 
 {% block header %}
 <h1 class="display-4 text-primary">Update</h1>
-<p class="caption">※ログイン中のユーザーの登録情報を表示しています。
-    登録情報を変更したい場合は変更したい部分を書き変えて、
-    パスワードフォームにパスワードを入力し、決定ボタンを押すと登録情報を変更できます。
+<p class="caption">※ログイン中のユーザーの登録情報です。
+    登録情報を変更したい場合は変更部分を入力しなおして、
+    パスワードフォームにパスワードを入力し、決定ボタンを押してください。
 </p>
-{% include 'messages.html' %}
 {% endblock header %}
 
 {% block content %}
@@ -25,6 +24,3 @@
     </tr>
 </form>
 {% endblock content %}
-
-{% block messages %}
-{% endblock messages %}

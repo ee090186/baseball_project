@@ -36,7 +36,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField('氏名（必須）', max_length=100)
     gender = models.CharField('性別',blank=True, null=True, max_length=5, choices=GENDER_CHOICES)
-    birthday = models.DateField('生年月日', blank=True, null=True)
+    birthday = models.DateField('生年月日(形式:年-月-日 {入力例:1990-01-01})', blank=True, null=True)
     email = models.EmailField('メールアドレス', blank=True, null=True)
     height = models.FloatField('身長(cm)', blank=True, null=True, validators=[MinValueValidator(50), MaxValueValidator(300)])
     weight = models.FloatField('体重(kg)', blank=True, null=True, validators=[MinValueValidator(20), MaxValueValidator(200)])
@@ -163,8 +163,8 @@ class Batting(models.Model):
     )
     DISCRIMINATION_CHOICES = (
         ('undecided', '打席結果未定'),
-        ('decided_with_contacted', '打席結果確定(フライアウト、ヒットなどバットとボールのコンタクト有り)'),
-        ('decided_with_uncontacted', '打席結果確定(三振、四球などバットとボールのコンタクト無し)'),
+        ('decided_with_contacted', '打席結果確定(フライ、ヒット等ボールとのコンタクト有り)'),
+        ('decided_with_uncontacted', '打席結果確定(三振、四球等ボールとのコンタクト無し)'),
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     pitting = models.OneToOneField(Pitting, on_delete=models.CASCADE)

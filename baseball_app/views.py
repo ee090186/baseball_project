@@ -157,10 +157,11 @@ def dataview(request):
 
         # ピッチャー・バッター名入力後もしくは打席結果入力後の、POST送信時
         if 'discrimination' not in request.POST:
+            
             # 打席結果のPOST送信時の処理
             if 'contacted_results' in request.POST:
-                contacted_results_form = ContactedResultsForm(request.POST)
                 batting = Batting.objects.get(id=request.POST['batting_id'])
+                contacted_results_form = ContactedResultsForm(request.POST)
                 if contacted_results_form.is_valid():
                     contacted_result = contacted_results_form.save(commit=False)
                     contacted_result.batting = batting
@@ -176,8 +177,8 @@ def dataview(request):
                     render(request, 'data.html', context)
 
             elif 'uncontacted_results' in request.POST:
-                uncontacted_results_form = UncontactedResultsForm(request.POST)
                 batting = Batting.objects.get(id=request.POST['batting_id'])
+                uncontacted_results_form = UncontactedResultsForm(request.POST)
                 if uncontacted_results_form.is_valid():
                     uncontacted_result = uncontacted_results_form.save(commit=False)
                     uncontacted_result.batting = batting

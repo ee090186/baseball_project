@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% block title %}Data{% endblock title %}
+
 {% block header %}
 <h1 class="display-4 text-primary">Data</h1>
 <p class="caption">
@@ -13,13 +15,13 @@
 {% endif %}
 {% endblock header %}
 
+
 {% block content %}
 <!-- ifテンプレートタグ内はif contextでは、ifにかからない -->
 {% if pitchername and battername %}
 <div class="container">
     <h1 class="h4 mb-4 font-weight-normal">{{ pitchername }} 対 {{ battername }}</h1>
 </div>
-{% include 'messages.html' %}
 
 <form action="" method="POST">{% csrf_token %}
     <table class="table">
@@ -49,7 +51,6 @@
 
 <!-- 以下、初回GET時の表示部分。ピッチャーとバッターのusernameをフォームに入力して送信する -->
 {% else %}
-{% include 'messages.html' %}
 <!-- <div class="container"> -->
 <form class="form-signin" method="post">{% csrf_token %}
     <!-- <h1 class="h3 mb-3 font-weight-normal">Please select pitcher and batter</h1> -->
@@ -68,6 +69,3 @@
 <!-- </div> -->
 {% endif %}
 {% endblock content %}
-
-{% block messages %}
-{% endblock messages %}
