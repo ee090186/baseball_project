@@ -272,11 +272,11 @@ def statsview(request):
             return render(request, 'stats.html')
 
         # 打点
-        contacted_scr = ContactedResults.objects.filter(score__gt=1). \
+        contacted_scr = ContactedResults.objects.filter(score__gte=1). \
                         filter(batting__user__id=player.id). \
                         aggregate(Sum('score'))
         uncontacted_scr = UncontactedResults.objects.filter(
-                            score__gt=1,
+                            score__gte=1,
                             uncontacted_results__in=['base_on_ball', 'hit_by_pitch'],
                             batting__user__id=player.id
                             ). \
@@ -332,10 +332,10 @@ def statsview(request):
             # 失点率
             contacted_qset = ContactedResults.objects.filter(batting__pitting__user=player)
             cnt_num_of_outs = contacted_qset.aggregate(Sum('added_number_of_outs')) # 獲得アウト数1
-            contacted_runs = contacted_qset.filter(score__gt=1).aggregate(Sum('score')) # 失点数1
+            contacted_runs = contacted_qset.filter(score__gte=1).aggregate(Sum('score')) # 失点数1
             uncontacted_qset = UncontactedResults.objects.filter(batting__pitting__user=player)
             uct_num_of_outs = uncontacted_qset.aggregate(Sum('added_number_of_outs')) # 獲得アウト数2
-            uncontacted_runs = uncontacted_qset.filter(score__gt=1).aggregate(Sum('score')) # 失点数2
+            uncontacted_runs = uncontacted_qset.filter(score__gte=1).aggregate(Sum('score')) # 失点数2
             num_of_outs = sum(transnone_to_zero(
                 cnt_num_of_outs['added_number_of_outs__sum'],
                 uct_num_of_outs['added_number_of_outs__sum'])) # 獲得アウト数合計
