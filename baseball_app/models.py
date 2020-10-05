@@ -155,7 +155,7 @@ class Pitting(models.Model):
 class Batting(models.Model):
     BATTING_CHOICES = (
         ('swing_and_missed', '空振り'),
-        ('swing_and_contact', 'ゴロ・フライ・ライナー・単打・長打'),
+        ('swing_and_contact', 'スイングかつボールとコンタクト有（フライ、ヒット等）'),
         ('foul', 'ファール'),
         ('taken', '見送り'),
         ('sacrifice', '犠打'),
@@ -168,7 +168,7 @@ class Batting(models.Model):
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     pitting = models.OneToOneField(Pitting, on_delete=models.CASCADE)
-    batting = models.CharField('打者の行動', max_length=20, choices=BATTING_CHOICES)
+    batting = models.CharField('打者行動', max_length=20, choices=BATTING_CHOICES)
     discrimination = models.CharField('打席結果', max_length=30, choices=DISCRIMINATION_CHOICES)
     def __str__(self):
         return self.user.username + self.batting

@@ -128,6 +128,7 @@ USE_TZ = True
 # デフォルトからの追記部分
 
 STATIC_URL = '/static/'
+STATIC_DIRS = [os.path.join(BASE_DIR, 'static')] # 要修正
 
 LOGIN_URL = '/login/'
 
