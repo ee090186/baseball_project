@@ -298,8 +298,11 @@ def statsview(request):
         hit_qset = contacted_qset.exclude(contacted_results__in=
                     ['groundball', 'flyball', 'linedrive'])
         num_of_hits = hit_qset.count() # 安打数
-        batting_average = round(num_of_hits / at_but, 5) * 10
-        
+        try:
+            batting_average = round(num_of_hits / at_but, 5) * 10
+        except ZeroDivisionError:
+            batting_average = '算出するにはデータが足りません'
+
         # 本塁打数
         num_of_homerun = ContactedResults.objects.filter(contacted_results__in=
                         ['inside_the_park_homerun','homerun'],
@@ -309,13 +312,19 @@ def statsview(request):
         num_of_single = hit_qset.filter(contacted_results='single').count()
         num_of_double = hit_qset.filter(contacted_results='double').count()
         num_of_triple = hit_qset.filter(contacted_results='triple').count()
-        slugging_average = round((num_of_single + num_of_double*2 + num_of_triple*3 + num_of_homerun*4)
-                            / at_but, 3)
+        try:
+            slugging_average = round((num_of_single + num_of_double*2 +
+                               num_of_triple*3 + num_of_homerun*4)/ at_but, 3)
+        except ZeroDivisionError:
+            slugging_average = '算出するにはデータが足りません'
 
         # 出塁率
         num_of_sacfly = sac_qset.filter(contacted_results='flyball').count() # 犠牲フライ数
-        on_base_percentage = round((num_of_hits + num_of_bob_and_hbp) 
-                            / (at_but + num_of_bob_and_hbp + num_of_sacfly), 3)
+        try:
+            on_base_percentage = round((num_of_hits + num_of_bob_and_hbp) 
+                                / (at_but + num_of_bob_and_hbp + num_of_sacfly), 3)
+        except ZeroDivisionError:
+            on_base_percentage = '算出するにはデータが足りません'
 
         context = {
             'player': player,
@@ -325,7 +334,7 @@ def statsview(request):
             'on_base_percentage': on_base_percentage,
             'slugging_average': slugging_average,
         }
-
+        
         # playerのpositionがpitcherの場合、投手用の指標を準備
         if Profile.objects.get(user=player).position == 'pitcher':
             pitcher_dstct = True
@@ -342,8 +351,10 @@ def statsview(request):
             earned_runs = sum(transnone_to_zero(
                 contacted_runs['score__sum'],
                 uncontacted_runs['score__sum'])) # 失点数（自責点の概念を無視する）
-            
-            run_average = earned_runs / (num_of_outs / 27) # 失点率
+            try:
+                run_average = earned_runs / (num_of_outs / 27) # 失点率
+            except ZeroDivisionError:
+                run_average = '算出するにはデータが足りません'
 
             # 奪三振率
             cnt_batsman_faced = contacted_qset.count() # 打席数1
@@ -351,20 +362,32 @@ def statsview(request):
             batsman_faced = cnt_batsman_faced + uct_batsman_faced # 打席数合計
             num_of_strikeout = uncontacted_qset.filter(
                                uncontacted_results='strikeout').count() # 奪三振数
-            k_percentage = round(num_of_strikeout / batsman_faced, 3)
+            try:
+                k_percentage = round(num_of_strikeout / batsman_faced, 3)
+            except ZeroDivisionError:
+                k_percentage = '算出するにはデータが足りません'
 
             # 被本塁打率
             earned_hr = contacted_qset.filter(contacted_results__in=
                             ['homerun', 'inside_the_park_homerun']).count() # 被本塁打数
-            hr_per_9 = round(earned_hr/batsman_faced, 3)
-            
+            try:
+                hr_per_9 = round(earned_hr/batsman_faced, 3)
+            except ZeroDivisionError:
+                hr_per_9 = '算出するにはデータが足りません'
+
             # 与四球率
             num_of_bb = uncontacted_qset.filter(uncontacted_results='base_on_ball').count() # 四球数
-            bb_percentage = round(num_of_bb / batsman_faced, 3)
+            try:
+                bb_percentage = round(num_of_bb / batsman_faced, 3)
+            except ZeroDivisionError:
+                bb_percentage = '算出するにはデータが足りません'
 
             # K-BB%
-            k_bb_percentage = round((num_of_strikeout - num_of_bb)/batsman_faced, 3) # (奪三振数－四球数)/打席数
-            
+            try:
+                k_bb_percentage = round((num_of_strikeout - num_of_bb)/batsman_faced, 3) # (奪三振数－四球数)/打席数
+            except ZeroDivisionError:
+                k_bb_percentage = '算出するにはデータが足りません'
+
             context.update({
                 'pitcher_dstct': pitcher_dstct,
                 'run_average': run_average,
@@ -373,7 +396,7 @@ def statsview(request):
                 'bb_percentage': bb_percentage,
                 'k_bb_percentage': k_bb_percentage,
                 })
-
+        
         return render(request, 'stats.html', context)
 
     return render(request, 'stats.html')
@@ -395,3 +418,5 @@ def transnone_to_zero(*args):
             return 0
         
         return args
+
+
